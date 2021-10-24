@@ -29,4 +29,12 @@
   "[typescriptreact]": {
     "editor.formatOnSave": true
   },
+  "editor.lineNumbers": "on",
+  "editor.rulers": [
+    80
+  ],
+  "editor.wordWrap": "on",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "npm.packageManager": "yarn",
 }
