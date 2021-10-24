@@ -1,0 +1,61 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      // デバック用react-scriptsを起動するタスク
+      // （デバック用ランチャーのpreLaunchTaskで指定）
+      "label": "react-start",
+      "detail": "react-scripts start for debug",
+      "type": "npm",
+      "script": "start",
+      // デバッカー起動のため、バックグラウンドへの移行を有効
+      // ※ preLaunchTaskはプロセスが終了するかバックグランドへ移行しないとデバッカーが起動しない
+      "isBackground": true,
+      // バックグランド移行を有効にするために必要な設定
+      // (プロパティ自体の目的はコンパイラが出力するエラーをVSCodeで取得するもの)
+      "problemMatcher": [
+        {
+          "pattern": [
+            {
+              "regexp": ".",
+              "file": 1,
+              "line": 1,
+              "message": 1
+            }
+          ],
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": "^Starting.*$",
+            // 下記「endsPattern」で指定した正規表現にマッチすればタスクがバックグラウンドへ移行する
+            // 上記その他の設定は下記設定を有効にするため問題のない範囲で適当に指定したもの
+            "endsPattern": "^Compiled.*$" 
+          },
+        }
+      ],
+      "options": {
+        "env": {
+          // script起動時に新規にブラウザを立ち上げないための設定（環境変数）
+          "BROWSER": "none"
+        }
+      }
+    },
+    { 
+      // デバック終了後にreact-scriptを終了させるためのタスク
+      // （デバック用ランチャーのpostDebugTaskで指定）
+      "label": "terminate-react-start",
+      // commandは引数を持てないため、input変数を参照して実行
+      "command": "${input:terminate}",
+      "type": "shell",
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "terminate",
+      "type": "command",
+      // 「workbench.action.tasks.terminate」は引数のタスクを終了
+      "command": "workbench.action.tasks.terminate",
+      "args": "react-start"
+    }
+  ]
+}

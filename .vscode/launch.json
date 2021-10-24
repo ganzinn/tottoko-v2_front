@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "pwa-chrome",
+      "request": "launch",
+      "name": "debug react",
+      "url": "http://localhost:${env:PORT}",
+      "webRoot": "${workspaceFolder}",
+      "preLaunchTask": "react-start",
+      "postDebugTask": "terminate-react-start",
+    }
+  ]
+}
