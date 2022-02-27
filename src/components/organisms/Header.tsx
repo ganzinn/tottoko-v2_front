@@ -34,6 +34,7 @@ export const Header: VFC<NavItems> = ({ topUrl, navItems }) => (
     p={3}
     bg="white"
     shadow="sm"
+    width="full"
   >
     <Box
       onClick={topUrl}
