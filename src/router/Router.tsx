@@ -22,6 +22,7 @@ import { EnhancedWorkEdit } from 'containers/pages/WorkEdit';
 import { EnhancedCreator } from 'containers/pages/Creator';
 import { EnhancedCreatorEdit } from 'containers/pages/CreatorEdit';
 import { EnhancedFamilyEntry } from 'containers/pages/FamilyEntry';
+import { RequireUserAuth } from 'router/RequireUserAuth';
 
 export const Router: VFC = () => (
   <BrowserRouter>
@@ -35,32 +36,32 @@ export const Router: VFC = () => (
           <Route path="sessions">
             <Route index element={<NotFound />} />
             <Route path="login" element={<EnhancedLogin />} />
-            <Route path="logout" element={<EnhancedLogout />} />
+            <Route path="logout" element={<RequireUserAuth><EnhancedLogout /></RequireUserAuth>} />
           </Route>
           <Route path="me">
-            <Route index element={<EnhancedMyProfile />} />
+            <Route index element={<RequireUserAuth><EnhancedMyProfile /></RequireUserAuth>} />
             <Route path="activate" element={<EnhancedActivate />} />
             <Route path="password_reset" element={<EnhancedPasswordReset />} />
-            <Route path="email_change_entry" element={<EnhancedEmailChangeEntry />} />
+            <Route path="email_change_entry" element={<RequireUserAuth><EnhancedEmailChangeEntry /></RequireUserAuth>} />
             <Route path="email_change" element={<EnhancedEmailChange />} />
             <Route path="creators">
-              <Route index element={<EnhancedCreators />} />
-              <Route path="entry" element={<EnhancedCreatorEntry />} />
+              <Route index element={<RequireUserAuth><EnhancedCreators /></RequireUserAuth>} />
+              <Route path="entry" element={<RequireUserAuth><EnhancedCreatorEntry /></RequireUserAuth>} />
             </Route>
             <Route path="works">
-              <Route index element={<EnhancedWorks />} />
-              <Route path="entry" element={<EnhancedWorkEntry />} />
+              <Route index element={<RequireUserAuth><EnhancedWorks /></RequireUserAuth>} />
+              <Route path="entry" element={<RequireUserAuth><EnhancedWorkEntry /></RequireUserAuth>} />
             </Route>
           </Route>
         </Route>
         <Route path="creators">
           <Route index element={<NotFound />} />
           <Route path=":id">
-            <Route index element={<EnhancedCreator />} />
-            <Route path="edit" element={<EnhancedCreatorEdit />} />
+            <Route index element={<RequireUserAuth><EnhancedCreator /></RequireUserAuth>} />
+            <Route path="edit" element={<RequireUserAuth><EnhancedCreatorEdit /></RequireUserAuth>} />
             <Route path="families">
               <Route index element={<NotFound />} />
-              <Route path="entry" element={<EnhancedFamilyEntry />} />
+              <Route path="entry" element={<RequireUserAuth><EnhancedFamilyEntry /></RequireUserAuth>} />
             </Route>
           </Route>
         </Route>
@@ -68,7 +69,7 @@ export const Router: VFC = () => (
           <Route index element={<NotFound />} />
           <Route path=":id">
             <Route index element={<EnhancedWork />} />
-            <Route path="edit" element={<EnhancedWorkEdit />} />
+            <Route path="edit" element={<RequireUserAuth><EnhancedWorkEdit /></RequireUserAuth>} />
           </Route>
         </Route>
         <Route path="*" element={<NotFound />} />
