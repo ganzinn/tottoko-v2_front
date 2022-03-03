@@ -7,41 +7,17 @@ import { useAppSelector } from 'store';
 export const EnhancedHeader: VFC = () => {
   const userAuth = useAppSelector((state) => state.userAuth);
   const navigate = useNavigate();
-  const topUrl = () => navigate('/');
 
-  const linkItems = (() => {
-    if (userAuth) {
-      return [
-        {
-          label: `ログイン：${userAuth.loginUser.name}さん`,
-          onClick: () => navigate('/users/me'),
-        },
-        {
-          label: '作品投稿',
-          onClick: () => navigate('/users/me/works/entry'),
-        },
-        {
-          label: '家族設定',
-          onClick: () => navigate('/users/me/creators'),
-        },
-        {
-          label: 'ログアウト',
-          onClick: () => navigate('/users/sessions/logout'),
-        },
-      ];
-    }
+  const headerProps = {
+    loginUser: userAuth?.loginUser,
+    logoOnClick: () => navigate('/'),
+    signUpOnClick: () => navigate('/users/sign_up'),
+    loginOnClick: () => navigate('/users/sessions/login'),
+    workEntryOnClick: () => navigate('/users/me/works/entry'),
+    familySettingOnClick: () => navigate('/users/me/creators'),
+    profileOnClick: () => navigate('/users/me'),
+    logoutOnClick: () => navigate('/users/sessions/logout'),
+  };
 
-    return [
-      {
-        label: '新規登録',
-        onClick: () => navigate('/users/sign_up'),
-      },
-      {
-        label: 'ログイン',
-        onClick: () => navigate('/users/sessions/login'),
-      },
-    ];
-  })();
-
-  return <Header topUrl={topUrl} navItems={linkItems} />;
+  return <Header {...headerProps} />;
 };
