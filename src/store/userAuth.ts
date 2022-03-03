@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { UserAuth } from 'domain/models/user';
+import { UserAuth } from 'feature/models/user';
 
 const initialState = null as UserAuth;
 
