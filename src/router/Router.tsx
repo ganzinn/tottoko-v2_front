@@ -1,7 +1,7 @@
 import { VFC } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-import { HeaderLayout } from 'components/templates/HeaderLayout';
+import { Layout } from 'components/templates/Layout';
 import { NotFound } from 'components/pages/NotFound';
 import { EnhancedAbout } from 'containers/pages/About';
 import { EnhancedSignUp } from 'containers/pages/SignUp';
@@ -27,7 +27,7 @@ import { RequireUserAuth } from 'router/RequireUserAuth';
 export const Router: VFC = () => (
   <BrowserRouter>
     <Routes>
-      <Route path="/" element={<HeaderLayout />}>
+      <Route path="/" element={<Layout />}>
         <Route index element={<EnhancedAbout />} />
         <Route path="users">
           <Route index element={<NotFound />} />
