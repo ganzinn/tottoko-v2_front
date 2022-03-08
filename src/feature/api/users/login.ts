@@ -1,7 +1,6 @@
 import ky, { HTTPError } from 'ky';
 
 import { DEFAULT_API_OPTIONS } from 'feature/api/config';
-import { config } from 'config';
 import { UserAuth } from 'feature/models/user';
 
 export type LoginParams = {
@@ -68,10 +67,7 @@ export const login = async (requestData: LoginParams): Promise<LoginResult> => {
   let userAuth: UserAuth = null;
   let errorMessages;
   try {
-    const response = await ky.post(
-      `${config.API_VERSION}/users/sessions/login`,
-      mergedOptions,
-    );
+    const response = await ky.post('users/sessions/login', mergedOptions);
     const body = (await response.json()) as unknown;
     if (!isLoginOkResBody(body)) {
       throw Error('LoginApiResponseBody unexpected');
