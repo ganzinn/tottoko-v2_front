@@ -30,6 +30,8 @@ export const BaseInput = forwardRef<BaseInputProps, 'input'>(
         handleBlur(e);
         onBlur(e);
       }}
+      height={12}
+      color="gray.800"
       {...rest}
     />
   ),
