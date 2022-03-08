@@ -2,15 +2,15 @@ import { memo, VFC } from 'react';
 import { MultipleFieldErrors } from 'react-hook-form';
 
 import {
-  FormErrorMessageList,
+  FormErrorMessageArea,
   ErrorMessage,
-} from 'components/atoms/FormErrorMessageList';
+} from 'components/atoms/FormErrorMessageArea';
 
 type Props = {
   errorTypes?: MultipleFieldErrors;
 };
 
-export const EnhancedFormErrorMessageList: VFC<Props> = memo(
+export const EnhancedFormErrorMessageArea: VFC<Props> = memo(
   ({ errorTypes }) => {
     const errorMessages: ErrorMessage[] = [];
     if (errorTypes) {
@@ -22,6 +22,6 @@ export const EnhancedFormErrorMessageList: VFC<Props> = memo(
       );
     }
 
-    return <FormErrorMessageList errorMessages={errorMessages} />;
+    return <FormErrorMessageArea errorMessages={errorMessages} />;
   },
 );

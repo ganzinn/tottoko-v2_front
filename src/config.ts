@@ -1,7 +1,7 @@
 const isString = (arg: unknown): arg is string => typeof arg === 'string';
 
 type configType = {
-  readonly API_VERSION: 'api/v1';
+  readonly API_VERSION: '/api/v1';
   readonly API_URL: string;
 };
 
@@ -13,7 +13,7 @@ const configFactory = (): configType => {
   // ------------------- 固定値を設定 -------------------
   const data: configType = {
     API_URL: apiUrl,
-    API_VERSION: 'api/v1',
+    API_VERSION: '/api/v1',
   } as const;
   // ----------------------------------------------------
 

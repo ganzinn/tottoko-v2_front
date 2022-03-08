@@ -27,6 +27,8 @@ export const EnhancedLogin: VFC = () => {
         navigate(from, { replace: true });
       } else if (errorMessages) {
         setApiMessages(() => errorMessages);
+      } else {
+        setApiMessages(() => ['システムエラー（エラー情報なし）']);
       }
     };
     void load();

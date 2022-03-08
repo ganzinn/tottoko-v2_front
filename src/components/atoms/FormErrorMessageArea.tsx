@@ -10,7 +10,7 @@ type Props = {
   errorMessages?: ErrorMessage[];
 };
 
-export const FormErrorMessageList: VFC<Props> = memo(({ errorMessages }) => (
+export const FormErrorMessageArea: VFC<Props> = memo(({ errorMessages }) => (
   <FormErrorMessage as="ul" listStyleType="none" display="inline-block">
     {errorMessages?.length &&
       errorMessages?.map((errorMessage) =>

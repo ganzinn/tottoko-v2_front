@@ -1,14 +1,5 @@
 import { VFC } from 'react';
-import {
-  Heading,
-  Text,
-  Stack,
-  Alert,
-  AlertIcon,
-  Link,
-  Spacer,
-  Center,
-} from '@chakra-ui/react';
+import { Heading, Text, Stack, Link, Spacer, Center } from '@chakra-ui/react';
 
 import { CmnInput, CmnInputProps } from 'components/molecules/CmnInput';
 import {
@@ -18,6 +9,7 @@ import {
 import { BaseButton, BaseButtonProps } from 'components/atoms/BaseButton';
 import { Card } from 'components/atoms/Card';
 import { NavLink } from 'react-router-dom';
+import { ApiMessagesArea } from 'components/atoms/ApiMessagesArea';
 
 type Props = {
   onSubmit?: React.FormEventHandler<HTMLFormElement>;
@@ -38,20 +30,13 @@ export const Login: VFC<Props> = ({
 }) => (
   <Center>
     <Card width="md" px={10} py={6}>
-      <Heading as="h1" size="lg" textAlign="center">
+      <Heading as="h3" fontSize={26} textAlign="center">
         ログイン
       </Heading>
-      <Spacer h={4} />
+      <Spacer h={6} />
       <form onSubmit={onSubmit}>
         <Stack spacing={4}>
-          {apiMessages && (
-            <Alert status="error">
-              <AlertIcon />
-              {apiMessages.map((apiMessage) => (
-                <Text key={apiMessage}>{apiMessage}</Text>
-              ))}
-            </Alert>
-          )}
+          <ApiMessagesArea {...{ apiMessages }} />
           <CmnInput {...emailProps} labelName="メールアドレス" />
           <PasswordInput {...passwordProps} />
           <Text textAlign="right" fontSize={14}>
@@ -65,10 +50,11 @@ export const Login: VFC<Props> = ({
               こちら
             </Link>
           </Text>
-          <BaseButton {...submitBtnProps} type="submit">
-            ログイン
-          </BaseButton>
         </Stack>
+        <Spacer h={6} />
+        <BaseButton {...submitBtnProps} type="submit" width="full">
+          ログイン
+        </BaseButton>
       </form>
     </Card>
   </Center>

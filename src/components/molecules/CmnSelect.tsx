@@ -1,10 +1,10 @@
 import { FormControl, FormLabel, forwardRef, Text } from '@chakra-ui/react';
 import { MultipleFieldErrors } from 'react-hook-form';
 
-import { BaseInput, BaseInputProps } from 'components/atoms/BaseInput';
+import { BaseSelect, BaseSelectProps } from 'components/atoms/BaseSelect';
 import { EnhancedFormErrorMessageArea } from 'containers/atoms/FormErrorMessageArea';
 
-export type CmnInputProps = BaseInputProps & {
+export type CmnSelectProps = BaseSelectProps & {
   id?: string;
   labelName?: string;
   isRequired?: boolean;
@@ -13,12 +13,11 @@ export type CmnInputProps = BaseInputProps & {
   errorTypes?: MultipleFieldErrors;
 };
 
-export const CmnInput = forwardRef<CmnInputProps, 'input'>(
+export const CmnSelect = forwardRef<CmnSelectProps, 'select'>(
   (
     {
       id,
       labelName,
-      type = 'text',
       isRequired,
       optionalLabel,
       isInvalid,
@@ -36,10 +35,10 @@ export const CmnInput = forwardRef<CmnInputProps, 'input'>(
           </Text>
         )}
       </FormLabel>
-      <BaseInput ref={ref} type={type} {...rest} />
+      <BaseSelect ref={ref} {...rest} />
       <EnhancedFormErrorMessageArea errorTypes={errorTypes} />
     </FormControl>
   ),
 );
 
-CmnInput.displayName = 'CmnInput';
+CmnSelect.displayName = 'CmnSelect';
