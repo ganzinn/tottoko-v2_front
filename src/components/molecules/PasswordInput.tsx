@@ -12,7 +12,7 @@ import {
 import { HiEye, HiEyeOff } from 'react-icons/hi';
 
 import { BaseInput } from 'components/atoms/BaseInput';
-import { EnhancedFormErrorMessageList } from 'containers/atoms/FormErrorMessageList';
+import { EnhancedFormErrorMessageArea } from 'containers/atoms/FormErrorMessageArea';
 import { CmnInputProps } from 'components/molecules/CmnInput';
 
 export type PasswordInputProps = CmnInputProps;
@@ -47,7 +47,9 @@ export const PasswordInput = forwardRef<PasswordInputProps, 'input'>(
 
     return (
       <FormControl id={id} isRequired={isRequired} isInvalid={isInvalid}>
-        <FormLabel>{labelName}</FormLabel>
+        <FormLabel fontWeight="bold" mb={1}>
+          {labelName}
+        </FormLabel>
         <InputGroup>
           <BaseInput
             ref={mergeRef}
@@ -55,17 +57,17 @@ export const PasswordInput = forwardRef<PasswordInputProps, 'input'>(
             type={isOpen ? 'text' : 'password'}
             autoComplete="current-password"
           />
-          <InputRightElement>
+          <InputRightElement height="full">
             <IconButton
               bg="transparent !important"
               variant="ghost"
               aria-label={isOpen ? 'Mask password' : 'Reveal password'}
-              icon={isOpen ? <HiEyeOff /> : <HiEye />}
+              icon={isOpen ? <HiEyeOff size={20} /> : <HiEye size={20} />}
               onClick={onClickReveal}
             />
           </InputRightElement>
         </InputGroup>
-        <EnhancedFormErrorMessageList errorTypes={errorTypes} />
+        <EnhancedFormErrorMessageArea errorTypes={errorTypes} />
       </FormControl>
     );
   },
