@@ -4,7 +4,7 @@ import camelcaseKeys from 'camelcase-keys';
 import { config } from 'config';
 
 export const DEFAULT_API_OPTIONS: Options = {
-  prefixUrl: config.API_URL,
+  prefixUrl: config.API_URL + config.API_VERSION,
   timeout: 7000,
   retry: 2,
   hooks: {
