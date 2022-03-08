@@ -28,7 +28,7 @@ export const EnhancedLogin: VFC = () => {
       } else if (errorMessages) {
         setApiMessages(() => errorMessages);
       } else {
-        setApiMessages(() => ['システムエラー']);
+        setApiMessages(() => ['システムエラー（エラー情報なし）']);
       }
     };
     void load();
