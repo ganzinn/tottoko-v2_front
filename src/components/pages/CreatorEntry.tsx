@@ -27,7 +27,7 @@ export const CreatorEntry: VFC<Props> = ({
   submitBtnProps = {},
 }) => (
   <Center>
-    <Card width="xl" px={10} py={6}>
+    <Card width="xl" px={10} py={8}>
       <Heading as="h3" fontSize={26} textAlign="center">
         お子さまの追加
       </Heading>
@@ -46,7 +46,7 @@ export const CreatorEntry: VFC<Props> = ({
           <CmnSelect {...genderProps} labelName="性別" optionalLabel />
           <CmnSelect {...relationProps} labelName="お子さまとの関係" />
         </Stack>
-        <Spacer h={12} />
+        <Spacer h={8} />
         <BaseButton {...submitBtnProps} type="submit" width="full">
           登録する
         </BaseButton>
