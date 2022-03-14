@@ -7,9 +7,8 @@ type ArgData = {
   path: string;
 };
 
-type RtnData = {
+export type SeletcOptions = {
   options?: CmnSelectProps['options'];
-  errorMessages?: string[];
 };
 
 type Option = {
@@ -19,21 +18,8 @@ type Option = {
 
 type OkResBody = {
   success: boolean;
-  options: {
-    id: string | number;
-    value: string;
-  }[];
+  options: Option[];
 };
-
-// // ------------------------------------------
-// const slctFdNames = ['creators', 'relations'] as const;
-// type SlctFdNames = typeof slctFdNames[number];
-// type SlctFds = { [K in SlctFdNames]: Options };
-// type Take<T extends SlctFdNames> = { success: boolean } & Pick<SlctFds, T> &
-//   Partial<Record<Exclude<SlctFdNames, T>, undefined>>;
-// type DistributeTake<T> = T extends SlctFdNames ? Take<T> : never;
-// type OkResBody = DistributeTake<SlctFdNames>;
-// // -------------------------------------------
 
 const isOption = (arg: unknown): arg is Option => {
   const o = arg as Option;
@@ -55,23 +41,9 @@ const isOkResBody = (arg: unknown): arg is OkResBody => {
   );
 };
 
-type ErrResBody = {
-  success: boolean;
-  code: string;
-  messages: string[];
-};
-
-const isErrResBody = (arg: unknown): arg is ErrResBody => {
-  const b = arg as ErrResBody;
-
-  return (
-    typeof b?.success === 'boolean' &&
-    b?.success === false &&
-    typeof b?.code === 'string'
-  );
-};
-
-export const selectOptions = async (argData: ArgData): Promise<RtnData> => {
+export const selectOptions = async (
+  argData: ArgData,
+): Promise<SeletcOptions> => {
   const mergedOptions = {
     ...DEFAULT_API_OPTIONS,
   };
@@ -81,7 +53,7 @@ export const selectOptions = async (argData: ArgData): Promise<RtnData> => {
     const response = await ky.get(argData.path, mergedOptions);
     const body = (await response.json()) as unknown;
     if (!isOkResBody(body)) {
-      throw Error('CreatorCreateApiResponseBody unexpected');
+      throw Error('ResBodyUnexpected');
     }
     options = body.options.map((option) => {
       const id =
@@ -91,18 +63,18 @@ export const selectOptions = async (argData: ArgData): Promise<RtnData> => {
     });
   } catch (error) {
     if (error instanceof HTTPError) {
-      const errorBody = (await error.response.json()) as unknown;
-      if (isErrResBody(errorBody)) {
-        errorMessages = errorBody.messages;
-      } else {
-        errorMessages = [
-          `選択肢のリスト取得に失敗しました: ${error.response.statusText}`,
-        ];
-      }
+      errorMessages = ['選択肢の取得に失敗しました'];
+    } else if (
+      error instanceof Error &&
+      error.message === 'ResBodyUnexpected'
+    ) {
+      errorMessages = ['選択肢の取得に失敗しました：システムエラー'];
     } else {
-      errorMessages = ['選択肢のリスト取得に失敗しました: サーバー接続失敗'];
+      errorMessages = ['選択肢の取得に失敗しました：サーバー接続エラー'];
+
+      throw errorMessages;
     }
   }
 
-  return { options, errorMessages };
+  return { options };
 };

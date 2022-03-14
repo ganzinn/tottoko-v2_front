@@ -7,8 +7,9 @@ import { EnhancedFormErrorMessageArea } from 'containers/atoms/FormErrorMessageA
 export type CmnSelectProps = BaseSelectProps & {
   id?: string;
   labelName?: string;
-  isRequired?: boolean;
   optionalLabel?: boolean;
+  isFetching?: boolean;
+  apiErrorMessage?: string[] | null;
   isInvalid?: boolean;
   errorTypes?: MultipleFieldErrors;
 };
@@ -18,15 +19,16 @@ export const CmnSelect = forwardRef<CmnSelectProps, 'select'>(
     {
       id,
       labelName,
-      isRequired,
       optionalLabel,
+      isFetching,
       isInvalid,
+      apiErrorMessage,
       errorTypes,
       ...rest
     },
     ref,
   ) => (
-    <FormControl id={id} isRequired={isRequired} isInvalid={isInvalid}>
+    <FormControl id={id} isInvalid={isInvalid}>
       <FormLabel fontWeight="bold" mb={1} display="flex" alignItems="center">
         <Text>{labelName}</Text>
         {optionalLabel && (
@@ -35,7 +37,12 @@ export const CmnSelect = forwardRef<CmnSelectProps, 'select'>(
           </Text>
         )}
       </FormLabel>
-      <BaseSelect ref={ref} {...rest} />
+      <BaseSelect ref={ref} isFetching={isFetching} {...rest} />
+      {apiErrorMessage && (
+        <Text fontSize="sm" color="red.500">
+          {apiErrorMessage[0]}
+        </Text>
+      )}
       <EnhancedFormErrorMessageArea errorTypes={errorTypes} />
     </FormControl>
   ),
