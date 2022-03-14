@@ -12,8 +12,8 @@ type Props = {
   apiMessages?: string[];
   nameProps?: CmnInputProps;
   dateOfBirthProps?: CmnInputProps;
-  genderProps?: CmnSelectProps;
   relationProps?: CmnSelectProps;
+  genderProps?: CmnSelectProps;
   submitBtnProps?: BaseButtonProps;
 };
 
@@ -22,8 +22,8 @@ export const CreatorEntry: VFC<Props> = ({
   apiMessages,
   nameProps = {},
   dateOfBirthProps = {},
-  genderProps = {},
   relationProps = {},
+  genderProps = {},
   submitBtnProps = {},
 }) => (
   <Center>
@@ -43,8 +43,8 @@ export const CreatorEntry: VFC<Props> = ({
             placeholder="yyyy-mm-dd"
             pattern="\d{4}-\d{2}-\d{2}"
           />
-          <CmnSelect {...genderProps} labelName="性別" optionalLabel />
           <CmnSelect {...relationProps} labelName="お子さまとの関係" />
+          <CmnSelect {...genderProps} labelName="性別" optionalLabel />
         </Stack>
         <Spacer h={8} />
         <BaseButton {...submitBtnProps} type="submit" width="full">
