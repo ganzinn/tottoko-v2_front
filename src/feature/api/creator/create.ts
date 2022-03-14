@@ -49,7 +49,7 @@ const isErrResBody = (arg: unknown): arg is ErrResBody => {
   );
 };
 
-export const creatorCreate = async (argData: ArgData): Promise<RtnData> => {
+export const createCreator = async (argData: ArgData): Promise<RtnData> => {
   const reqHeaders = {
     Authorization: `Bearer ${argData.accessToken}`,
   };

@@ -19,7 +19,7 @@ export const EnhancedLogin: VFC = () => {
     formState: { errors, isValid, isSubmitting },
   } = useForm<LoginParams>({ criteriaMode: 'all', mode: 'all' });
 
-  const onSubmit: SubmitHandler<LoginParams> = (submitData) => {
+  const onSubmit: SubmitHandler<LoginParams> = async (submitData) => {
     const load = async () => {
       const { userAuth, errorMessages } = await login(submitData);
       if (userAuth) {
@@ -31,7 +31,7 @@ export const EnhancedLogin: VFC = () => {
         setApiMessages(() => ['システムエラー（エラー情報なし）']);
       }
     };
-    void load();
+    await load();
   };
 
   const emailProps = {

@@ -3,6 +3,8 @@ import { Select, SelectProps, forwardRef } from '@chakra-ui/react';
 export type BaseSelectProps = SelectProps & {
   // 汎用性を兼ねてidをstringで定義（apiがnumberの時はstringに変換）
   options?: { id: string; value: string }[];
+  disabled?: boolean;
+  isFetching?: boolean;
   placeholder?: string;
   handleChange?: React.ChangeEventHandler<HTMLSelectElement>;
   handleBlur?: React.FocusEventHandler<HTMLSelectElement>;
@@ -12,6 +14,8 @@ export const BaseSelect = forwardRef<BaseSelectProps, 'select'>(
   (
     {
       options,
+      disabled,
+      isFetching = false,
       // -------- react-hook-form props --------
       name,
       onChange = () => undefined,
@@ -36,7 +40,8 @@ export const BaseSelect = forwardRef<BaseSelectProps, 'select'>(
       }}
       height={12}
       color="gray.800"
-      placeholder="選択してください"
+      disabled={disabled || isFetching}
+      placeholder={isFetching ? 'データ取得中...' : '選択してください'}
       {...rest}
     >
       {options &&

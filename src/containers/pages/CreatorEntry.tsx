@@ -1,13 +1,13 @@
-import { VFC, useState, useEffect } from 'react';
+import { VFC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { useQuery } from 'react-query';
 
 import { CreatorEntry } from 'components/pages/CreatorEntry';
-import { CmnSelectProps } from 'components/molecules/CmnSelect';
-import { creatorCreate } from 'feature/api/creator/create';
+import { createCreator } from 'feature/api/creator/create';
 import { useToast } from '@chakra-ui/react';
 import { useAppSelector } from 'store';
-import { selectOptions } from 'feature/api/select';
+import { selectOptions, SeletcOptions } from 'feature/api/select';
 
 type FormDataProps = {
   name: string;
@@ -18,44 +18,36 @@ type FormDataProps = {
 
 export const EnhancedCreatorEntry: VFC = () => {
   const [apiMessages, setApiMessages] = useState<string[]>();
-  const [genderOptions, setGenderOptions] =
-    useState<CmnSelectProps['options']>();
-  const [relationOptions, setRelationOptions] =
-    useState<CmnSelectProps['options']>();
-  useEffect(() => {
-    const load = async () => {
-      const { options, errorMessages } = await selectOptions({
-        path: 'genders',
-      });
-      if (options) {
-        setGenderOptions(() => options);
-      } else if (errorMessages) {
-        setApiMessages(() => errorMessages);
-      } else {
-        setApiMessages(() => ['システムエラー（エラー情報なし）']);
-      }
-    };
-    void load();
-  }, []);
-  useEffect(() => {
-    const load = async () => {
-      const { options, errorMessages } = await selectOptions({
-        path: 'relations?purp=creator_entry',
-      });
-      if (options) {
-        setRelationOptions(() => options);
-      } else if (errorMessages) {
-        setApiMessages(() => errorMessages);
-      } else {
-        setApiMessages(() => ['システムエラー（エラー情報なし）']);
-      }
-    };
-    void load();
-  }, []);
-
   const accessToken = useAppSelector(
     (state) => state.userAuth?.accessToken.token,
   );
+
+  const {
+    data: relationOptions,
+    error: relationApiErrorMessage,
+    isFetching: relationIsFetching,
+  } = useQuery<SeletcOptions, string[]>(
+    ['relations', 'creator_entry'],
+    () => selectOptions({ path: 'relations?purp=creator_entry' }),
+    {
+      enabled: !!accessToken,
+      staleTime: Infinity,
+    },
+  );
+
+  const {
+    data: genderOptions,
+    error: genderApiErrorMessage,
+    isFetching: genderIsFetching,
+  } = useQuery<SeletcOptions, string[]>(
+    ['genders'],
+    () => selectOptions({ path: 'genders' }),
+    {
+      enabled: !!accessToken,
+      staleTime: Infinity,
+    },
+  );
+
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -65,10 +57,10 @@ export const EnhancedCreatorEntry: VFC = () => {
     formState: { errors, isValid, isSubmitting },
   } = useForm<FormDataProps>({ criteriaMode: 'all', mode: 'all' });
 
-  const onSubmit: SubmitHandler<FormDataProps> = (formData) => {
+  const onSubmit: SubmitHandler<FormDataProps> = async (formData) => {
     if (accessToken) {
       const load = async () => {
-        const { isSuccess, errorMessages } = await creatorCreate({
+        const { isSuccess, errorMessages } = await createCreator({
           ...formData,
           accessToken,
         });
@@ -81,7 +73,7 @@ export const EnhancedCreatorEntry: VFC = () => {
           setApiMessages(() => ['システムエラー（エラー情報なし）']);
         }
       };
-      void load();
+      await load();
     } else {
       setApiMessages(() => ['システムエラー(認証情報なし)']);
     }
@@ -106,20 +98,24 @@ export const EnhancedCreatorEntry: VFC = () => {
     errorTypes: errors?.dateOfBirth?.types,
   };
 
-  const genderProps = {
-    ...register('gender', {}),
-    options: genderOptions,
-    isInvalid: !!errors?.gender,
-    errorTypes: errors?.gender?.types,
-  };
-
   const relationProps = {
     ...register('relation', {
       required: '必須入力です',
     }),
-    options: relationOptions,
+    isFetching: relationIsFetching,
+    options: relationOptions?.options,
+    apiErrorMessage: relationApiErrorMessage,
     isInvalid: !!errors?.relation,
     errorTypes: errors?.relation?.types,
+  };
+
+  const genderProps = {
+    ...register('gender', {}),
+    isFetching: genderIsFetching,
+    options: genderOptions?.options,
+    apiErrorMessage: genderApiErrorMessage,
+    isInvalid: !!errors?.gender,
+    errorTypes: errors?.gender?.types,
   };
 
   const submitBtnProps = {

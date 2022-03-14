@@ -29,7 +29,7 @@ export const Login: VFC<Props> = ({
   submitBtnProps = {},
 }) => (
   <Center>
-    <Card width="md" px={10} py={6}>
+    <Card width="md" px={10} py={8}>
       <Heading as="h3" fontSize={26} textAlign="center">
         ログイン
       </Heading>
@@ -51,7 +51,7 @@ export const Login: VFC<Props> = ({
             </Link>
           </Text>
         </Stack>
-        <Spacer h={6} />
+        <Spacer h={8} />
         <BaseButton {...submitBtnProps} type="submit" width="full">
           ログイン
         </BaseButton>
