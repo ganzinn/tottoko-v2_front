@@ -7,13 +7,16 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { store } from 'store';
 import { queryClient } from 'queryClient';
 import { theme } from 'theme';
+import { UserAuthProvider } from 'provider/UserAuthProvider';
 import { Router } from 'router/Router';
 
 const App: VFC = () => (
   <Provider store={store}>
     <QueryClientProvider client={queryClient}>
       <ChakraProvider theme={theme}>
-        <Router />
+        <UserAuthProvider>
+          <Router />
+        </UserAuthProvider>
       </ChakraProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
