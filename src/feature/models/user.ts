@@ -6,7 +6,7 @@ export type AccessToken = {
 export type LoginUser = {
   name: string;
   email: string;
-  resizeAvatarUrl?: string | null;
+  avatarUrl?: string | null;
 };
 
 export type UserAuth = {
