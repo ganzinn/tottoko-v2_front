@@ -17,7 +17,7 @@ type LoginOkResBody = {
   user: {
     name: string;
     email: string;
-    resizeAvatarUrl?: string | null;
+    avatarUrl?: string | null;
   };
 };
 
@@ -43,8 +43,8 @@ const isLoginOkResBody = (arg: unknown): arg is LoginOkResBody => {
     new Date(b?.expires * 1000).toString() !== 'Invalid Date' &&
     typeof b?.user?.name === 'string' &&
     typeof b?.user?.email === 'string' &&
-    (typeof b?.user?.resizeAvatarUrl === 'string' ||
-      [null, undefined].includes(b?.user?.resizeAvatarUrl))
+    (typeof b?.user?.avatarUrl === 'string' ||
+      [null, undefined].includes(b?.user?.avatarUrl))
   );
 };
 
@@ -60,8 +60,10 @@ const isLoginErrResBody = (arg: unknown): arg is LoginErrResBody => {
 };
 
 export const login = async (requestData: LoginParams): Promise<LoginResult> => {
+  const credentials: RequestCredentials = 'include';
   const mergedOptions = {
     ...DEFAULT_API_OPTIONS,
+    ...{ credentials }, // Cookie保存
     ...{ json: requestData },
   };
   let userAuth: UserAuth = null;

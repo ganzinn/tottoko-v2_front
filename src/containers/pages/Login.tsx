@@ -1,9 +1,9 @@
-import { VFC, useState, ChangeEvent } from 'react';
+import { VFC, useState, ChangeEvent, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { Login } from 'components/pages/Login';
-import { useAppDispatch, setUserAuth } from 'store';
+import { useAppDispatch, setUserAuth, useAppSelector } from 'store';
 import { login, LoginParams } from 'feature/api/users/login';
 
 export const EnhancedLogin: VFC = () => {
@@ -12,6 +12,7 @@ export const EnhancedLogin: VFC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const locationState = location.state as { from: Location };
+  const userAuth = useAppSelector((state) => state.userAuth);
   const from = locationState ? locationState.from.pathname : '/users/me/works';
   const {
     register,
@@ -19,19 +20,23 @@ export const EnhancedLogin: VFC = () => {
     formState: { errors, isValid, isSubmitting },
   } = useForm<LoginParams>({ criteriaMode: 'all', mode: 'all' });
 
+  useEffect(() => {
+    if (userAuth) {
+      navigate('/users/me/works', { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userAuth]);
+
   const onSubmit: SubmitHandler<LoginParams> = async (submitData) => {
-    const load = async () => {
-      const { userAuth, errorMessages } = await login(submitData);
-      if (userAuth) {
-        dispatch(setUserAuth(userAuth));
-        navigate(from, { replace: true });
-      } else if (errorMessages) {
-        setApiMessages(() => errorMessages);
-      } else {
-        setApiMessages(() => ['システムエラー（エラー情報なし）']);
-      }
-    };
-    await load();
+    const { userAuth: newUserAuth, errorMessages } = await login(submitData);
+    if (newUserAuth) {
+      dispatch(setUserAuth(newUserAuth));
+      navigate(from, { replace: true });
+    } else if (errorMessages) {
+      setApiMessages(() => errorMessages);
+    } else {
+      setApiMessages(() => ['システムエラー（エラー情報なし）']);
+    }
   };
 
   const emailProps = {
