@@ -1,15 +1,9 @@
 import { VFC } from 'react';
-import { Box, CircularProgress, Stack, Text } from '@chakra-ui/react';
+import { Stack, Text } from '@chakra-ui/react';
 
 import { EnhancedCreatorCard } from 'containers/atoms/CreatorCard';
 import { Creator } from 'feature/models/creator';
-
-const DataProgress: VFC<{ text?: string }> = ({ text = 'データ更新中...' }) => (
-  <Box display="flex" justifyContent="center" gap={1}>
-    <Text>{text}</Text>
-    <CircularProgress isIndeterminate size={6} />
-  </Box>
-);
+import { DataLoading } from 'components/atoms/DataLoading';
 
 type Props = {
   isLoading?: boolean;
@@ -22,7 +16,7 @@ export const CreatorCards: VFC<Props> = ({
   isFetching = false,
   creators,
 }) => {
-  if (isLoading) return <DataProgress text="データ取得中..." />;
+  if (isLoading) return <DataLoading />;
 
   return (
     <>
@@ -32,12 +26,12 @@ export const CreatorCards: VFC<Props> = ({
             {creators.map((creator) => (
               <EnhancedCreatorCard key={creator.id} creator={creator} />
             ))}
-            {isFetching && <DataProgress />}
+            {isFetching && <DataLoading text="データ更新確認中..." />}
           </Stack>
         ) : (
           <>
             <Text fontWeight="bold">登録されていません</Text>
-            {isFetching && <DataProgress />}
+            {isFetching && <DataLoading text="データ更新確認中..." />}
           </>
         ))}
     </>
