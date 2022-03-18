@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Header } from 'components/organisms/Header';
 import { useAppSelector, useAppDispatch, setUserAuth } from 'store';
 import { logout } from 'feature/api/users/logout';
-import { isErrMessages } from 'feature/api';
+import { ApiError } from 'feature/api';
 import { useQueryClient } from 'react-query';
 
 export const EnhancedHeader: VFC = () => {
@@ -24,8 +24,6 @@ export const EnhancedHeader: VFC = () => {
   const logoutOnClick = async () => {
     setIsLoading(() => true);
     try {
-      // 401エラーはrefreshTokenも削除され、後続処理が可能なため、
-      // エラー表示で処理をとめない（よってisSuccessフラグで処理判定しない）
       await logout();
       navigate('/');
       dispatch(setUserAuth(null));
@@ -33,7 +31,12 @@ export const EnhancedHeader: VFC = () => {
       onModalClose();
     } catch (error) {
       // 401以外のエラーはrefreshTokenが削除せないため、メッセージ表示
-      if (isErrMessages(error)) setApiMessages(error);
+      if (error instanceof ApiError) {
+        setApiMessages(error.displayMessages);
+      } else {
+        // eslint-disable-next-line no-console
+        console.error(error);
+      }
     } finally {
       setIsLoading(() => false);
     }

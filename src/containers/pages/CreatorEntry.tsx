@@ -6,46 +6,38 @@ import { useQuery } from 'react-query';
 import { CreatorEntry } from 'components/pages/CreatorEntry';
 import { createCreator } from 'feature/api/creator/create';
 import { useToast } from '@chakra-ui/react';
-import { useAppSelector } from 'store';
 import { selectOptions, SeletcOptions } from 'feature/api/select';
+import { ApiError } from 'feature/api';
+import { useLogout } from 'feature/hooks/useLogout';
 
-type FormDataProps = {
+export type InputData = {
   name: string;
   dateOfBirth: string;
-  gender: string;
-  relation: string;
+  relationId: string;
+  genderId: string;
 };
 
 export const EnhancedCreatorEntry: VFC = () => {
-  const [apiMessages, setApiMessages] = useState<string[]>();
-  const accessToken = useAppSelector(
-    (state) => state.userAuth?.accessToken.token,
-  );
+  const [apiError, setApiError] = useState<ApiError | null>(null);
 
   const {
-    data: relationOptions,
-    error: relationApiErrorMessage,
+    data: relationData,
+    error: relationError,
     isFetching: relationIsFetching,
-  } = useQuery<SeletcOptions, string[]>(
+  } = useQuery<SeletcOptions, ApiError>(
     ['relations', 'creator_entry'],
     () => selectOptions({ path: 'relations?purp=creator_entry' }),
-    {
-      enabled: !!accessToken,
-      staleTime: Infinity,
-    },
+    { staleTime: Infinity },
   );
 
   const {
-    data: genderOptions,
-    error: genderApiErrorMessage,
+    data: genderData,
+    error: genderError,
     isFetching: genderIsFetching,
-  } = useQuery<SeletcOptions, string[]>(
+  } = useQuery<SeletcOptions, ApiError>(
     ['genders'],
     () => selectOptions({ path: 'genders' }),
-    {
-      enabled: !!accessToken,
-      staleTime: Infinity,
-    },
+    { staleTime: Infinity },
   );
 
   const toast = useToast();
@@ -55,29 +47,26 @@ export const EnhancedCreatorEntry: VFC = () => {
     register,
     handleSubmit,
     formState: { errors, isValid, isSubmitting },
-  } = useForm<FormDataProps>({ criteriaMode: 'all', mode: 'all' });
+  } = useForm<InputData>({ criteriaMode: 'all', mode: 'all' });
 
-  const onSubmit: SubmitHandler<FormDataProps> = async (formData) => {
-    if (accessToken) {
-      const load = async () => {
-        const { isSuccess, errorMessages } = await createCreator({
-          ...formData,
-          accessToken,
-        });
-        if (isSuccess) {
-          toast({ title: '登録しました', status: 'success', isClosable: true });
-          navigate('/users/me/creators');
-        } else if (errorMessages) {
-          setApiMessages(() => errorMessages);
-        } else {
-          setApiMessages(() => ['システムエラー（エラー情報なし）']);
-        }
-      };
-      await load();
-    } else {
-      setApiMessages(() => ['システムエラー(認証情報なし)']);
+  const onSubmit: SubmitHandler<InputData> = async (inputData) => {
+    try {
+      const { isSuccess } = await createCreator(inputData);
+      if (isSuccess) {
+        toast({ title: '登録しました', status: 'success', isClosable: true });
+        navigate('/users/me/creators');
+      }
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setApiError(error);
+      } else {
+        // eslint-disable-next-line no-console
+        console.error(error);
+      }
     }
   };
+
+  useLogout(apiError);
 
   const nameProps = {
     ...register('name', {
@@ -99,23 +88,23 @@ export const EnhancedCreatorEntry: VFC = () => {
   };
 
   const relationProps = {
-    ...register('relation', {
+    ...register('relationId', {
       required: '必須入力です',
     }),
     isFetching: relationIsFetching,
-    options: relationOptions?.options,
-    apiErrorMessage: relationApiErrorMessage,
-    isInvalid: !!errors?.relation,
-    errorTypes: errors?.relation?.types,
+    options: relationData?.options,
+    apiErrorMessage: relationError?.displayMessages,
+    isInvalid: !!errors?.relationId,
+    errorTypes: errors?.relationId?.types,
   };
 
   const genderProps = {
-    ...register('gender', {}),
+    ...register('genderId', {}),
     isFetching: genderIsFetching,
-    options: genderOptions?.options,
-    apiErrorMessage: genderApiErrorMessage,
-    isInvalid: !!errors?.gender,
-    errorTypes: errors?.gender?.types,
+    options: genderData?.options,
+    apiErrorMessage: genderError?.displayMessages,
+    isInvalid: !!errors?.genderId,
+    errorTypes: errors?.genderId?.types,
   };
 
   const submitBtnProps = {
@@ -127,7 +116,7 @@ export const EnhancedCreatorEntry: VFC = () => {
     <CreatorEntry
       onSubmit={handleSubmit(onSubmit)}
       {...{
-        apiMessages,
+        apiMessages: apiError?.displayMessages,
         nameProps,
         dateOfBirthProps,
         genderProps,
