@@ -9,18 +9,23 @@ import { queryClient } from 'queryClient';
 import { theme } from 'theme';
 import { UserAuthProvider } from 'provider/UserAuthProvider';
 import { Router } from 'router/Router';
+import { injectStore } from 'feature/api';
 
-const App: VFC = () => (
-  <Provider store={store}>
-    <QueryClientProvider client={queryClient}>
-      <ChakraProvider theme={theme}>
-        <UserAuthProvider>
-          <Router />
-        </UserAuthProvider>
-      </ChakraProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
-  </Provider>
-);
+const App: VFC = () => {
+  injectStore(store);
+
+  return (
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <ChakraProvider theme={theme}>
+          <UserAuthProvider>
+            <Router />
+          </UserAuthProvider>
+        </ChakraProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </Provider>
+  );
+};
 
 export default App;

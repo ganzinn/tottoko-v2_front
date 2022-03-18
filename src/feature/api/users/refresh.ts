@@ -1,7 +1,11 @@
-import ky, { HTTPError } from 'ky';
+import { HTTPError } from 'ky';
 
-import { DEFAULT_API_OPTIONS } from 'feature/api/config';
 import { UserAuth } from 'feature/models/user';
+import { ApiError, defApi, isErrResBody } from 'feature/api';
+
+type RtnData = {
+  userAuth: UserAuth;
+};
 
 type OkResBody = {
   success: boolean;
@@ -10,18 +14,8 @@ type OkResBody = {
   user: {
     name: string;
     email: string;
-    resizeAvatarUrl?: string | null;
+    avatarUrl?: string | null;
   };
-};
-
-type ErrResBody = {
-  success: boolean;
-  code: string;
-  messages: string[];
-};
-
-type Result = {
-  userAuth: UserAuth;
 };
 
 const isOkResBody = (arg: unknown): arg is OkResBody => {
@@ -35,59 +29,73 @@ const isOkResBody = (arg: unknown): arg is OkResBody => {
     new Date(b?.expires * 1000).toString() !== 'Invalid Date' &&
     typeof b?.user?.name === 'string' &&
     typeof b?.user?.email === 'string' &&
-    (typeof b?.user?.resizeAvatarUrl === 'string' ||
-      [null, undefined].includes(b?.user?.resizeAvatarUrl))
+    (typeof b?.user?.avatarUrl === 'string' ||
+      [null, undefined].includes(b?.user?.avatarUrl))
   );
 };
 
-const isErrResBody = (arg: unknown): arg is ErrResBody => {
-  const b = arg as ErrResBody;
-
-  return (
-    typeof b?.success === 'boolean' &&
-    b?.success === false &&
-    typeof b?.code === 'string' &&
-    Array.isArray(b?.messages) &&
-    b?.messages.every((i) => typeof i === 'string')
-  );
-};
-
-export const refresh = async (): Promise<Result> => {
-  const credentials: RequestCredentials = 'include';
-  const mergedOptions = {
-    ...DEFAULT_API_OPTIONS,
-    ...{ credentials }, // Cookie保存
-  };
-  let userAuth: UserAuth = null;
-  let errorMessages;
+export const refresh = async (): Promise<RtnData> => {
+  let userAuth = null;
   try {
-    const response = await ky.post('users/sessions/refresh', mergedOptions);
+    const response = await defApi.post('users/sessions/refresh', {
+      credentials: 'include',
+    });
     const body = (await response.json()) as unknown;
     if (!isOkResBody(body)) {
-      throw Error('ApiResBodyUnexpected');
+      throw new ApiError(
+        'システムエラー：サーバー・クライアント間矛盾',
+        'refresh:ResBodyUnexpected',
+      );
     }
     const loginUser = body.user;
     const accessToken = {
       token: body.token,
-      expires: new Date(body.expires * 1000).toISOString(),
+      expires: body.expires * 1000,
     };
     userAuth = { accessToken, loginUser };
   } catch (error) {
-    if (error instanceof HTTPError) {
+    if (error instanceof ApiError) {
+      throw error;
+    } else if (error instanceof HTTPError) {
       const errorBody = (await error.response.json()) as unknown;
       if (isErrResBody(errorBody)) {
-        errorMessages = errorBody.messages;
+        if (
+          error.response.status === 401 &&
+          errorBody.code === 'refresh_token_expired'
+        ) {
+          throw new ApiError(
+            'セッションの有効期限切れです。ログインしなおしてください',
+            `refresh:${errorBody.code}`,
+            'logout',
+          );
+        } else if (
+          error.response.status === 401 &&
+          errorBody.code === 'refresh_jti_not_include'
+        ) {
+          throw new ApiError(
+            '他端末でログインされたためセッションを終了しました。ログインしなおしてください',
+            `refresh:${errorBody.code}`,
+            'logout',
+          );
+        } else if (
+          error.response.status === 401 &&
+          errorBody.code === 'refresh_token_invalid'
+        ) {
+          throw new ApiError(
+            '有効なセッションではありません。ログインしなおしてください',
+            `refresh:${errorBody.code}`,
+            'logout',
+          );
+        } else {
+          throw new ApiError(errorBody.messages, `refresh:${errorBody.code}`);
+        }
       } else {
-        errorMessages = [
-          `${error.response.status}: ${error.response.statusText}`,
-        ];
+        const serverMessage = `${error.response.status}: ${error.response.statusText}`;
+        throw new ApiError(serverMessage, `refresh:${serverMessage}`);
       }
     } else {
-      // eslint-disable-next-line no-console
-      console.error(error);
-      errorMessages = ['サーバーに接続、または使用できません'];
+      throw new ApiError('サーバーに接続できません', 'refresh:other');
     }
-    throw errorMessages;
   }
 
   return { userAuth };
