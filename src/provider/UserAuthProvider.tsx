@@ -2,8 +2,8 @@ import { useEffect, useState, VFC } from 'react';
 
 import { refresh } from 'feature/api/users/refresh';
 import { useAppDispatch, setUserAuth } from 'store';
-import { isErrMessages } from 'feature/api';
 import { DataLoading } from 'components/atoms/DataLoading';
+// import { ApiError } from 'api';
 
 type Type = {
   children: JSX.Element;
@@ -21,8 +21,7 @@ export const UserAuthProvider: VFC<Type> = ({ children }) => {
           dispatch(setUserAuth(userAuth));
         }
       } catch (error) {
-        // eslint-disable-next-line no-console
-        if (isErrMessages(error)) console.error(error[0]);
+        // if (error instanceof ApiError) console.error(error.message);
       } finally {
         setIsLoading(() => false);
       }
