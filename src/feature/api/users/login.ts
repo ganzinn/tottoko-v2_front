@@ -1,16 +1,17 @@
-import ky, { HTTPError } from 'ky';
+import { HTTPError } from 'ky';
 
-import { DEFAULT_API_OPTIONS } from 'feature/api/config';
 import { UserAuth } from 'feature/models/user';
+import { ApiError, defApi, isErrResBody } from 'feature/api';
+import { FormData } from 'containers/pages/Login';
 
-export type LoginParams = {
-  auth: {
-    email: string;
-    password: string;
-  };
+type ArgData = FormData;
+
+type RtnData = {
+  userAuth: UserAuth;
+  errorMessages?: string[];
 };
 
-type LoginOkResBody = {
+type OkResBody = {
   success: boolean;
   token: string;
   expires: number;
@@ -21,19 +22,8 @@ type LoginOkResBody = {
   };
 };
 
-type LoginErrResBody = {
-  success: boolean;
-  code: string;
-  messages: string[];
-};
-
-type LoginResult = {
-  userAuth: UserAuth;
-  errorMessages?: string[];
-};
-
-const isLoginOkResBody = (arg: unknown): arg is LoginOkResBody => {
-  const b = arg as LoginOkResBody;
+const isOkResBody = (arg: unknown): arg is OkResBody => {
+  const b = arg as OkResBody;
 
   return (
     typeof b?.success === 'boolean' &&
@@ -48,54 +38,46 @@ const isLoginOkResBody = (arg: unknown): arg is LoginOkResBody => {
   );
 };
 
-const isLoginErrResBody = (arg: unknown): arg is LoginErrResBody => {
-  const b = arg as LoginErrResBody;
-
-  return (
-    typeof b?.success === 'boolean' &&
-    b?.success === false &&
-    typeof b?.code === 'string'
-    // typeof b?.messages?.base
-  );
-};
-
-export const login = async (requestData: LoginParams): Promise<LoginResult> => {
-  const credentials: RequestCredentials = 'include';
-  const mergedOptions = {
-    ...DEFAULT_API_OPTIONS,
-    ...{ credentials }, // Cookie保存
-    ...{ json: requestData },
+export const login = async (argData: ArgData): Promise<RtnData> => {
+  const reqData = {
+    auth: argData,
   };
-  let userAuth: UserAuth = null;
-  let errorMessages;
+  let userAuth = null;
   try {
-    const response = await ky.post('users/sessions/login', mergedOptions);
+    const response = await defApi.post('users/sessions/login', {
+      credentials: 'include',
+      ...{ json: reqData },
+    });
     const body = (await response.json()) as unknown;
-    if (!isLoginOkResBody(body)) {
-      throw Error('LoginApiResponseBody unexpected');
+    if (!isOkResBody(body)) {
+      throw new ApiError(
+        'システムエラー：サーバー・クライアント間矛盾',
+        'refresh:ResBodyUnexpected',
+      );
     }
     const loginUser = body.user;
     const accessToken = {
       token: body.token,
-      expires: new Date(body.expires * 1000).toISOString(),
+      // expires: new Date(body.expires * 1000).toISOString(),
+      expires: body.expires * 1000,
     };
     userAuth = { accessToken, loginUser };
   } catch (error) {
-    if (error instanceof HTTPError) {
+    if (error instanceof ApiError) {
+      throw error;
+    } else if (error instanceof HTTPError) {
       const errorBody = (await error.response.json()) as unknown;
-      if (isLoginErrResBody(errorBody)) {
-        errorMessages = errorBody.messages;
+      if (isErrResBody(errorBody)) {
+        throw new ApiError(errorBody.messages, errorBody.code);
       } else {
-        errorMessages = [
+        throw new ApiError(
           `${error.response.status}: ${error.response.statusText}`,
-        ];
+        );
       }
     } else {
-      // eslint-disable-next-line no-console
-      console.error(error);
-      errorMessages = ['サーバーに接続、または使用できません'];
+      throw new ApiError('サーバーに接続できません', 'other');
     }
   }
 
-  return { userAuth, errorMessages };
+  return { userAuth };
 };
