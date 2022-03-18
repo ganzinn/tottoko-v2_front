@@ -1,6 +1,6 @@
 export type AccessToken = {
   token: string;
-  expires: string;
+  expires: number;
 };
 
 export type LoginUser = {
