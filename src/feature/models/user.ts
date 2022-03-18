@@ -1,12 +1,12 @@
 export type AccessToken = {
   token: string;
-  expires: string;
+  expires: number;
 };
 
 export type LoginUser = {
   name: string;
   email: string;
-  resizeAvatarUrl?: string | null;
+  avatarUrl?: string | null;
 };
 
 export type UserAuth = {

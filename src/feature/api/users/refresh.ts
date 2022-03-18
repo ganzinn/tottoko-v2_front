@@ -2,13 +2,9 @@ import { HTTPError } from 'ky';
 
 import { UserAuth } from 'feature/models/user';
 import { ApiError, defApi, isErrResBody } from 'feature/api';
-import { FormData } from 'containers/pages/Login';
-
-type ArgData = FormData;
 
 type RtnData = {
   userAuth: UserAuth;
-  errorMessages?: string[];
 };
 
 type OkResBody = {
@@ -38,15 +34,11 @@ const isOkResBody = (arg: unknown): arg is OkResBody => {
   );
 };
 
-export const login = async (argData: ArgData): Promise<RtnData> => {
-  const reqData = {
-    auth: argData,
-  };
+export const refresh = async (): Promise<RtnData> => {
   let userAuth = null;
   try {
-    const response = await defApi.post('users/sessions/login', {
+    const response = await defApi.post('users/sessions/refresh', {
       credentials: 'include',
-      ...{ json: reqData },
     });
     const body = (await response.json()) as unknown;
     if (!isOkResBody(body)) {
@@ -58,7 +50,6 @@ export const login = async (argData: ArgData): Promise<RtnData> => {
     const loginUser = body.user;
     const accessToken = {
       token: body.token,
-      // expires: new Date(body.expires * 1000).toISOString(),
       expires: body.expires * 1000,
     };
     userAuth = { accessToken, loginUser };
@@ -68,14 +59,42 @@ export const login = async (argData: ArgData): Promise<RtnData> => {
     } else if (error instanceof HTTPError) {
       const errorBody = (await error.response.json()) as unknown;
       if (isErrResBody(errorBody)) {
-        throw new ApiError(errorBody.messages, errorBody.code);
+        if (
+          error.response.status === 401 &&
+          errorBody.code === 'refresh_token_expired'
+        ) {
+          throw new ApiError(
+            'セッションの有効期限切れです。ログインしなおしてください',
+            `refresh:${errorBody.code}`,
+            'logout',
+          );
+        } else if (
+          error.response.status === 401 &&
+          errorBody.code === 'refresh_jti_not_include'
+        ) {
+          throw new ApiError(
+            '他端末でログインされたためセッションを終了しました。ログインしなおしてください',
+            `refresh:${errorBody.code}`,
+            'logout',
+          );
+        } else if (
+          error.response.status === 401 &&
+          errorBody.code === 'refresh_token_invalid'
+        ) {
+          throw new ApiError(
+            '有効なセッションではありません。ログインしなおしてください',
+            `refresh:${errorBody.code}`,
+            'logout',
+          );
+        } else {
+          throw new ApiError(errorBody.messages, `refresh:${errorBody.code}`);
+        }
       } else {
-        throw new ApiError(
-          `${error.response.status}: ${error.response.statusText}`,
-        );
+        const serverMessage = `${error.response.status}: ${error.response.statusText}`;
+        throw new ApiError(serverMessage, `refresh:${serverMessage}`);
       }
     } else {
-      throw new ApiError('サーバーに接続できません', 'other');
+      throw new ApiError('サーバーに接続できません', 'refresh:other');
     }
   }
 

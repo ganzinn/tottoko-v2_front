@@ -8,6 +8,7 @@ export const store = configureStore({
     userAuth: userAuthSlice.reducer,
   },
 });
+export type StoreType = typeof store;
 
 export const { setUserAuth } = userAuthSlice.actions;
 

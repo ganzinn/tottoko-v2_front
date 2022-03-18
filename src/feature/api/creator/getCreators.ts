@@ -1,15 +1,10 @@
-import ky, { HTTPError } from 'ky';
+import { HTTPError } from 'ky';
 
-import { DEFAULT_API_OPTIONS } from 'feature/api/config';
-import { AccessToken } from 'feature/models/user';
+import { ApiError, requireUserAuthApi, isErrResBody } from 'feature/api';
 import { Creator } from 'feature/models/creator';
 
-type ArgData = {
-  accessToken?: AccessToken;
-};
-
 type RtnData = {
-  creators?: Creator[];
+  creators: Creator[];
 };
 
 type OkResBody = {
@@ -44,63 +39,33 @@ const isOkResBody = (arg: unknown): arg is OkResBody => {
   );
 };
 
-type ErrResBody = {
-  success: boolean;
-  code: string;
-  messages: string[];
-};
-
-const isErrResBody = (arg: unknown): arg is ErrResBody => {
-  const b = arg as ErrResBody;
-
-  return (
-    typeof b?.success === 'boolean' &&
-    b?.success === false &&
-    typeof b?.code === 'string'
-  );
-};
-
-export const getCreators = async (argData: ArgData): Promise<RtnData> => {
+export const getCreators = async (): Promise<RtnData> => {
   let creators;
-  let errorMessages;
   try {
-    if (!argData.accessToken) {
-      throw Error('NoAccessToken');
-    }
-    const reqHeaders = {
-      Authorization: `Bearer ${argData.accessToken.token}`,
-    };
-    const mergedOptions = {
-      ...DEFAULT_API_OPTIONS,
-      ...{ headers: reqHeaders },
-    };
-    const response = await ky.get('users/me/creators', mergedOptions);
+    const response = await requireUserAuthApi.get('users/me/creators');
     const body = (await response.json()) as unknown;
     if (!isOkResBody(body)) {
-      throw Error('ResBodyUnexpected');
+      throw new ApiError(
+        'システムエラー：サーバー・クライアント間矛盾',
+        'getCreators:ResBodyUnexpected',
+      );
     }
     creators = body.creators;
   } catch (error) {
-    if (error instanceof HTTPError) {
+    if (error instanceof ApiError) {
+      throw error;
+    } else if (error instanceof HTTPError) {
       const errorBody = (await error.response.json()) as unknown;
       if (isErrResBody(errorBody)) {
-        errorMessages = errorBody.messages;
+        throw new ApiError(errorBody.messages, errorBody.code);
       } else {
-        errorMessages = [
+        throw new ApiError(
           `${error.response.status}: ${error.response.statusText}`,
-        ];
+        );
       }
-    } else if (error instanceof Error && error.message === 'NoAccessToken') {
-      errorMessages = ['認証情報が設定されていません'];
-    } else if (
-      error instanceof Error &&
-      error.message === 'ResBodyUnexpected'
-    ) {
-      errorMessages = ['システムエラー'];
     } else {
-      errorMessages = ['サーバーに接続できません'];
+      throw new ApiError('サーバーに接続できません', 'other');
     }
-    throw errorMessages;
   }
 
   return { creators };

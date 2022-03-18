@@ -1,13 +1,13 @@
-import ky, { HTTPError } from 'ky';
+import { HTTPError } from 'ky';
 
-import { DEFAULT_API_OPTIONS } from 'feature/api/config';
+import { ApiError, defApi, isErrResBody } from 'feature/api';
+
+type RtnData = {
+  isSuccess: boolean;
+};
 
 type OkResBody = {
   success: boolean;
-};
-
-type Result = {
-  isSuccess?: boolean;
 };
 
 const isOkResBody = (arg: unknown): arg is OkResBody => {
@@ -16,32 +16,38 @@ const isOkResBody = (arg: unknown): arg is OkResBody => {
   return typeof b?.success === 'boolean' && b?.success === true;
 };
 
-export const logout = async (): Promise<Result> => {
-  const credentials: RequestCredentials = 'include';
-  const mergedOptions = {
-    ...DEFAULT_API_OPTIONS,
-    ...{ credentials }, // Cookie送信
-  };
-  let isSuccess;
-  let errorMessages;
+export const logout = async (): Promise<RtnData> => {
+  let isSuccess = false;
   try {
-    const response = await ky.delete('users/sessions/logout', mergedOptions);
+    const response = await defApi.delete('users/sessions/logout', {
+      credentials: 'include',
+    });
     const body = (await response.json()) as unknown;
     if (!isOkResBody(body)) {
-      throw Error('ApiResBodyUnexpected');
+      throw new ApiError(
+        'システムエラー：サーバー・クライアント間矛盾',
+        'refresh:ResBodyUnexpected',
+      );
     }
     isSuccess = body.success;
   } catch (error) {
-    if (error instanceof HTTPError) {
-      if (error.response.status !== 401) {
-        errorMessages = [
+    if (error instanceof ApiError) {
+      throw error;
+    } else if (error instanceof HTTPError) {
+      const errorBody = (await error.response.json()) as unknown;
+      if (isErrResBody(errorBody)) {
+        // リフレッシュトークン以外のエラーのみスロー
+        if (error.response.status !== 401) {
+          throw new ApiError(errorBody.messages, errorBody.code);
+        }
+      } else {
+        throw new ApiError(
           `${error.response.status}: ${error.response.statusText}`,
-        ];
+        );
       }
     } else {
-      errorMessages = ['サーバーに接続できません'];
+      throw new ApiError('サーバーに接続できません', 'other');
     }
-    throw errorMessages;
   }
 
   return { isSuccess };
