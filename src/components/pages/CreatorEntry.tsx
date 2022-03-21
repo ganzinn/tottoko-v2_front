@@ -1,11 +1,15 @@
 import { VFC } from 'react';
 import { Heading, Stack, Spacer, Center } from '@chakra-ui/react';
 
-import { CmnInput, CmnInputProps } from 'components/molecules/CmnInput';
-import { CmnSelect, CmnSelectProps } from 'components/molecules/CmnSelect';
-import { BaseButton, BaseButtonProps } from 'components/atoms/BaseButton';
 import { Card } from 'components/atoms/Card';
 import { ApiMessagesArea } from 'components/atoms/ApiMessagesArea';
+import { CmnInput, CmnInputProps } from 'components/molecules/CmnInput';
+import { CmnSelect, CmnSelectProps } from 'components/molecules/CmnSelect';
+import {
+  AvatarUpload,
+  AvatarUploadProps,
+} from 'components/molecules/AvatarUpload';
+import { BaseButton, BaseButtonProps } from 'components/atoms/BaseButton';
 
 type Props = {
   onSubmit?: React.FormEventHandler<HTMLFormElement>;
@@ -14,6 +18,7 @@ type Props = {
   dateOfBirthProps?: CmnInputProps;
   relationProps?: CmnSelectProps;
   genderProps?: CmnSelectProps;
+  avatarProps?: AvatarUploadProps;
   submitBtnProps?: BaseButtonProps;
 };
 
@@ -24,6 +29,7 @@ export const CreatorEntry: VFC<Props> = ({
   dateOfBirthProps = {},
   relationProps = {},
   genderProps = {},
+  avatarProps = {},
   submitBtnProps = {},
 }) => (
   <Center>
@@ -45,6 +51,7 @@ export const CreatorEntry: VFC<Props> = ({
           />
           <CmnSelect {...relationProps} labelName="お子さまとの関係" />
           <CmnSelect {...genderProps} labelName="性別" optionalLabel />
+          <AvatarUpload {...avatarProps} optionalLabel />
         </Stack>
         <Spacer h={8} />
         <BaseButton {...submitBtnProps} type="submit" width="full">
