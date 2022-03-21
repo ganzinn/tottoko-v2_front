@@ -28,10 +28,14 @@ export const Creators: VFC<Props> = ({
         お子さま一覧
       </Heading>
       <Spacer h={6} />
+      <Box textAlign="right">
+        <BaseLink {...creatorEntryLinkProps}>＋お子さまを追加する</BaseLink>
+      </Box>
+      <Spacer h={6} />
       {apiMessages && (
         <>
           <ApiMessagesArea {...{ apiMessages }} />
-          <Spacer h={4} />
+          <Spacer h={6} />
         </>
       )}
       <CreatorCards
@@ -39,10 +43,6 @@ export const Creators: VFC<Props> = ({
         isFetching={isFetching}
         creators={creators}
       />
-      <Spacer h={8} />
-      <Box textAlign="right">
-        <BaseLink {...creatorEntryLinkProps}>＋お子さまを追加する</BaseLink>
-      </Box>
     </Card>
   </Center>
 );
