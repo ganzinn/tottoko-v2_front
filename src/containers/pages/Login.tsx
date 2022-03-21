@@ -69,7 +69,7 @@ export const EnhancedLogin: VFC = () => {
     }),
     isInvalid: !!errors?.password,
     errorTypes: errors?.password?.types,
-    handleChange: (e: ChangeEvent<HTMLInputElement>) => {
+    beforeValidateOnChange: (e: ChangeEvent<HTMLInputElement>) => {
       const { value } = e.target;
       if (value.length > 30) {
         e.target.value = value.slice(0, 30);
