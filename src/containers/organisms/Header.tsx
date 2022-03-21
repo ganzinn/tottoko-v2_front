@@ -29,6 +29,7 @@ export const EnhancedHeader: VFC = () => {
       dispatch(setUserAuth(null));
       queryClient.clear();
       onModalClose();
+      setApiMessages(null);
     } catch (error) {
       // 401以外のエラーはrefreshTokenが削除せないため、メッセージ表示
       if (error instanceof ApiError) {
@@ -53,7 +54,10 @@ export const EnhancedHeader: VFC = () => {
     apiMessages,
     isModalOpen,
     onModalOpen,
-    onModalClose,
+    onModalClose: () => {
+      onModalClose();
+      setApiMessages(null);
+    },
     logoutOnClick,
     isLoading,
   };

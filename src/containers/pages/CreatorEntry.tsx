@@ -10,12 +10,15 @@ import { selectOptions, SeletcOptions } from 'feature/api/select';
 import { ApiError } from 'feature/api';
 import { useLogout } from 'feature/hooks/useLogout';
 
-export type InputData = {
+type FormInputData = {
   name: string;
   dateOfBirth: string;
   relationId: string;
-  genderId: string;
+  genderId?: string;
+  avatar?: FileList;
 };
+
+export type ApiInputData = Omit<FormInputData, 'avatar'> & { avatar?: File };
 
 export const EnhancedCreatorEntry: VFC = () => {
   const [apiError, setApiError] = useState<ApiError | null>(null);
@@ -47,11 +50,15 @@ export const EnhancedCreatorEntry: VFC = () => {
     register,
     handleSubmit,
     formState: { errors, isValid, isSubmitting },
-  } = useForm<InputData>({ criteriaMode: 'all', mode: 'all' });
+  } = useForm<FormInputData>({ criteriaMode: 'all', mode: 'all' });
 
-  const onSubmit: SubmitHandler<InputData> = async (inputData) => {
+  const onSubmit: SubmitHandler<FormInputData> = async (formInputData) => {
+    const apiInputData: ApiInputData = {
+      ...formInputData,
+      avatar: formInputData.avatar ? formInputData.avatar[0] : undefined,
+    };
     try {
-      const { isSuccess } = await createCreator(inputData);
+      const { isSuccess } = await createCreator(apiInputData);
       if (isSuccess) {
         toast({ title: '登録しました', status: 'success', isClosable: true });
         navigate('/users/me/creators');
@@ -107,6 +114,28 @@ export const EnhancedCreatorEntry: VFC = () => {
     errorTypes: errors?.genderId?.types,
   };
 
+  // 画像バリデーション
+  const validateAvatar = (images?: FileList) => {
+    if (!images) return true;
+    const [avatar] = images;
+    const fsMb = avatar?.size / (1024 * 1024);
+    if (fsMb && fsMb > 3) {
+      return '画像サイズは1MB以下にしてください';
+    }
+    if (!['image/jpeg', 'image/png'].includes(avatar?.type)) {
+      return 'jpeg, pngのファイル形式で指定してください';
+    }
+
+    return true;
+  };
+  const avatarProps = {
+    ...register('avatar', {
+      validate: validateAvatar,
+    }),
+    isInvalid: !!errors?.avatar,
+    errorTypes: errors?.avatar?.types,
+  };
+
   const submitBtnProps = {
     disabled: !isValid,
     isLoading: isSubmitting,
@@ -120,6 +149,7 @@ export const EnhancedCreatorEntry: VFC = () => {
         nameProps,
         dateOfBirthProps,
         genderProps,
+        avatarProps,
         relationProps,
         submitBtnProps,
       }}

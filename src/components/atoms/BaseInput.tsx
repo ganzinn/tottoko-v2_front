@@ -1,8 +1,10 @@
 import { Input, InputProps, forwardRef } from '@chakra-ui/react';
 
 export type BaseInputProps = InputProps & {
-  handleChange?: React.ChangeEventHandler<HTMLInputElement>;
-  handleBlur?: React.FocusEventHandler<HTMLInputElement>;
+  beforeValidateOnChange?: React.ChangeEventHandler<HTMLInputElement>;
+  afterValidateOnChange?: React.ChangeEventHandler<HTMLInputElement>;
+  beforeValidateBlur?: React.FocusEventHandler<HTMLInputElement>;
+  afterValidateBlur?: React.FocusEventHandler<HTMLInputElement>;
 };
 
 export const BaseInput = forwardRef<BaseInputProps, 'input'>(
@@ -13,8 +15,10 @@ export const BaseInput = forwardRef<BaseInputProps, 'input'>(
       onChange = () => undefined,
       onBlur = () => undefined,
       // ---------------------------------------
-      handleChange = () => undefined,
-      handleBlur = () => undefined,
+      beforeValidateOnChange = () => undefined,
+      afterValidateOnChange = () => undefined,
+      beforeValidateBlur = () => undefined,
+      afterValidateBlur = () => undefined,
       ...rest
     },
     ref, // react-hook-form props
@@ -23,12 +27,14 @@ export const BaseInput = forwardRef<BaseInputProps, 'input'>(
       ref={ref}
       name={name}
       onChange={(e) => {
-        handleChange(e);
+        beforeValidateOnChange(e);
         onChange(e);
+        afterValidateOnChange(e);
       }}
       onBlur={(e) => {
-        handleBlur(e);
+        beforeValidateBlur(e);
         onBlur(e);
+        afterValidateBlur(e);
       }}
       height={12}
       color="gray.800"
