@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { HTTPError } from 'ky';
-import snakecaseKeys from 'snakecase-keys';
+// import snakecaseKeys from 'snakecase-keys';
 
 import { ApiError, isErrResBody, requireUserAuthApi } from 'feature/api';
-import { InputData } from 'containers/pages/CreatorEntry';
+import { ApiInputData } from 'containers/pages/CreatorEntry';
 
-type ArgData = InputData;
+type ArgData = ApiInputData;
 
 type RtnData = {
   isSuccess: boolean;
@@ -29,18 +28,29 @@ const isOkResBody = (arg: unknown): arg is OkResBody => {
 };
 
 export const createCreator = async (argData: ArgData): Promise<RtnData> => {
-  const snkcsArgData = snakecaseKeys(argData);
   const reqData = new FormData();
-  Object.keys(snkcsArgData).forEach((key) => {
-    reqData.append(
-      `creator[${key}]`,
-      snkcsArgData[key as keyof typeof snkcsArgData],
-    );
-  });
+  // Object.keys(snkcsArgData).forEach((key) => {
+  //   if (snkcsArgData[key as keyof typeof snkcsArgData]) {
+  //     reqData.append(
+  //       `creator[${key}]`,
+  //       snkcsArgData[key as keyof typeof snkcsArgData],
+  //     );
+  //   }
+  // });
+  reqData.append('creator[name]', argData.name);
+  reqData.append('creator[date_of_birth]', argData.dateOfBirth);
+  reqData.append('creator[relation_id]', argData.relationId);
+  if (argData.genderId) {
+    reqData.append('creator[gender_id]', argData.genderId);
+  }
+  if (argData.avatar) {
+    reqData.append('creator[avatar]', argData.avatar);
+  }
 
   let isSuccess = false;
   try {
     const response = await requireUserAuthApi.post('users/me/creators', {
+      // headers: { 'content-type': 'multipart/form-data' },
       body: reqData,
     });
     const body = (await response.json()) as unknown;
