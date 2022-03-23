@@ -88,6 +88,8 @@ export const requireUserAuthApi = defApi.extend({
           const { expires } = userAuth.accessToken;
           const now = new Date().getTime();
           if (now > expires) {
+            // isRefreshing 実装要（前送信のrefreshのレスポンスが返える前に実行するとエラーとなる）
+            // true → 送信しない
             const { userAuth: newUserAuth } = await refresh();
             if (newUserAuth) {
               store.dispatch(setUserAuth(newUserAuth));
