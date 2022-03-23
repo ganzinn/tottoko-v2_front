@@ -1,5 +1,5 @@
 import { VFC } from 'react';
-import { Heading, Spacer, Center, Box } from '@chakra-ui/react';
+import { Heading, Center, Box, Stack } from '@chakra-ui/react';
 
 import { Card } from 'components/atoms/Card';
 import { Creator } from 'feature/models/creator';
@@ -23,26 +23,21 @@ export const Creators: VFC<Props> = ({
   creatorEntryLinkProps = {},
 }) => (
   <Center>
-    <Card width="xl" px={8} py={8}>
-      <Heading as="h3" fontSize={26} textAlign="center">
-        お子さま一覧
-      </Heading>
-      <Spacer h={6} />
-      <Box textAlign="right">
-        <BaseLink {...creatorEntryLinkProps}>＋お子さまを追加する</BaseLink>
-      </Box>
-      <Spacer h={6} />
-      {apiMessages && (
-        <>
-          <ApiMessagesArea {...{ apiMessages }} />
-          <Spacer h={6} />
-        </>
-      )}
-      <CreatorCards
-        isLoading={isLoading}
-        isFetching={isFetching}
-        creators={creators}
-      />
+    <Card width="xl" px={10} py={8}>
+      <Stack spacing={6}>
+        <Heading as="h3" fontSize={26} textAlign="center">
+          お子さま一覧
+        </Heading>
+        <ApiMessagesArea {...{ apiMessages }} />
+        <Box textAlign="right">
+          <BaseLink {...creatorEntryLinkProps}>＋お子さまを追加する</BaseLink>
+        </Box>
+        <CreatorCards
+          isLoading={isLoading}
+          isFetching={isFetching}
+          creators={creators}
+        />
+      </Stack>
     </Card>
   </Center>
 );

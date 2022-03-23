@@ -73,7 +73,7 @@ export const refresh = async (): Promise<RtnData> => {
           errorBody.code === 'refresh_jti_not_include'
         ) {
           throw new ApiError(
-            '他端末でログインされたためセッションを終了しました。ログインしなおしてください',
+            '有効なセッションではありません。ログインしなおしてください',
             `refresh:${errorBody.code}`,
             'logout',
           );
@@ -82,7 +82,7 @@ export const refresh = async (): Promise<RtnData> => {
           errorBody.code === 'refresh_token_invalid'
         ) {
           throw new ApiError(
-            '有効なセッションではありません。ログインしなおしてください',
+            '不正なトークンを検知しました',
             `refresh:${errorBody.code}`,
             'logout',
           );

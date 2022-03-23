@@ -17,18 +17,19 @@ import {
   Avatar,
   MenuGroup,
   MenuDivider,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
+  // Modal,
+  // ModalOverlay,
+  // ModalContent,
+  // ModalHeader,
+  // ModalFooter,
 } from '@chakra-ui/react';
 import { HamburgerIcon } from '@chakra-ui/icons';
 
 import logo from 'image/logo.png';
 import { LoginUser } from 'feature/models/user';
-import { BaseButton } from 'components/atoms/BaseButton';
-import { ApiMessagesArea } from 'components/atoms/ApiMessagesArea';
+// import { BaseButton } from 'components/atoms/BaseButton';
+// import { ApiMessagesArea } from 'components/atoms/ApiMessagesArea';
+import { CmnModal } from 'components/molecules/CmnModal';
 
 type Props = {
   loginUser?: LoginUser;
@@ -232,22 +233,12 @@ export const Header: VFC<Props> = ({
         </MenuList>
       </Menu>
     </Flex>
-
-    <Modal isOpen={isModalOpen} onClose={onModalClose} isCentered>
-      <ModalOverlay />
-      <ModalContent p={4}>
-        <ModalHeader textAlign="center">ログアウトしますか？</ModalHeader>
-        <ApiMessagesArea {...{ apiMessages }} />
-        <ModalFooter justifyContent="space-around">
-          <Button variant="ghost" onClick={onModalClose}>
-            キャンセル
-          </Button>
-          <BaseButton onClick={logoutOnClick} isLoading={isLoading}>
-            ログアウトする
-          </BaseButton>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+    <CmnModal
+      {...{ apiMessages, isLoading, isModalOpen, onModalClose }}
+      title="ログアウトしますか？"
+      executeBtnLabel="ログアウトする"
+      executeOnClick={logoutOnClick}
+    />
   </>
 );
 

@@ -60,7 +60,11 @@ export const EnhancedCreatorEntry: VFC = () => {
     try {
       const { isSuccess } = await createCreator(apiInputData);
       if (isSuccess) {
-        toast({ title: '登録しました', status: 'success', isClosable: true });
+        toast({
+          title: `${formInputData.name}さんの情報を登録しました`,
+          status: 'success',
+          isClosable: true,
+        });
         navigate('/users/me/creators');
       }
     } catch (error) {
@@ -87,6 +91,16 @@ export const EnhancedCreatorEntry: VFC = () => {
   const dateOfBirthProps = {
     ...register('dateOfBirth', {
       required: '必須入力です',
+      validate: (value) => {
+        if (!value) return true;
+        const arry = value.split('-');
+        const year = Number(arry[0]);
+        if (year < 1900 || year > 2100) {
+          return '正しい生年月日を入力してください';
+        }
+
+        return true;
+      },
       // valueAsDate: true, // 型が「Date」となり、ブラウザ標準の日付チェックが有効となる。
       // しかし、他のReactHookFormのチェック（必須入力など）が有効とならないため無効化
     }),
@@ -115,9 +129,10 @@ export const EnhancedCreatorEntry: VFC = () => {
   };
 
   // 画像バリデーション
-  const validateAvatar = (images?: FileList) => {
+  const avatarValidate = (images?: FileList) => {
     if (!images) return true;
     const [avatar] = images;
+    if (!avatar) return true;
     const fsMb = avatar?.size / (1024 * 1024);
     if (fsMb && fsMb > 3) {
       return '画像サイズは1MB以下にしてください';
@@ -130,7 +145,7 @@ export const EnhancedCreatorEntry: VFC = () => {
   };
   const avatarProps = {
     ...register('avatar', {
-      validate: validateAvatar,
+      validate: avatarValidate,
     }),
     isInvalid: !!errors?.avatar,
     errorTypes: errors?.avatar?.types,

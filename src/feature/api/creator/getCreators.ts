@@ -24,7 +24,7 @@ const isCreator = (arg: unknown): arg is Creator => {
     typeof b.dateOfBirth === 'string' &&
     new Date(b.dateOfBirth).toString() !== 'Invalid Date' &&
     typeof b.age?.years === 'number' &&
-    typeof b.age?.years === 'number'
+    typeof b.age?.months === 'number'
   );
 };
 
