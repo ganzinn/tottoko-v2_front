@@ -34,30 +34,31 @@ export const CreatorEntry: VFC<Props> = ({
 }) => (
   <Center>
     <Card width="xl" px={10} py={8}>
-      <Heading as="h3" fontSize={26} textAlign="center">
-        お子さまの追加
-      </Heading>
-      <Spacer h={6} />
-      <form onSubmit={onSubmit}>
-        <Stack spacing={4}>
-          <ApiMessagesArea {...{ apiMessages }} />
-          <CmnInput {...nameProps} labelName="おなまえ" />
-          <CmnInput
-            {...dateOfBirthProps}
-            type="date"
-            labelName="生年月日"
-            placeholder="yyyy-mm-dd"
-            pattern="\d{4}-\d{2}-\d{2}"
-          />
-          <CmnSelect {...relationProps} labelName="お子さまとの関係" />
-          <CmnSelect {...genderProps} labelName="性別" optionalLabel />
-          <AvatarUpload {...avatarProps} optionalLabel />
-        </Stack>
-        <Spacer h={8} />
-        <BaseButton {...submitBtnProps} type="submit" width="full">
-          登録する
-        </BaseButton>
-      </form>
+      <Stack spacing={6}>
+        <Heading as="h3" fontSize={26} textAlign="center">
+          お子さまの追加
+        </Heading>
+        <ApiMessagesArea {...{ apiMessages }} />
+        <form onSubmit={onSubmit}>
+          <Stack spacing={4}>
+            <CmnInput {...nameProps} labelName="おなまえ" />
+            <CmnInput
+              {...dateOfBirthProps}
+              type="date"
+              labelName="生年月日"
+              placeholder="yyyy-mm-dd"
+              pattern="\d{4}-\d{2}-\d{2}"
+            />
+            <CmnSelect {...relationProps} labelName="お子さまとの関係" />
+            <CmnSelect {...genderProps} labelName="性別" optionalLabel />
+            <AvatarUpload {...avatarProps} optionalLabel />
+          </Stack>
+          <Spacer h={8} />
+          <BaseButton {...submitBtnProps} type="submit" width="full">
+            登録する
+          </BaseButton>
+        </form>
+      </Stack>
     </Card>
   </Center>
 );

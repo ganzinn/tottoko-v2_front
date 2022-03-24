@@ -1,20 +1,22 @@
 import { HTTPError } from 'ky';
-// import snakecaseKeys from 'snakecase-keys';
+import snakecaseKeys from 'snakecase-keys';
 
 import { ApiError, isErrResBody, requireUserAuthApi } from 'feature/api';
-import { ApiInputData } from 'containers/pages/CreatorEntry';
 
-type ArgData = ApiInputData;
+type ArgData = {
+  email: string;
+  relationId: string;
+  creatorId: string;
+};
 
-type RtnData = {
+export type RtnData = {
   isSuccess: boolean;
+  userName: string;
 };
 
 type OkResBody = {
   success: boolean;
-  creator: {
-    id: string;
-  };
+  userName: string;
 };
 
 const isOkResBody = (arg: unknown): arg is OkResBody => {
@@ -23,36 +25,26 @@ const isOkResBody = (arg: unknown): arg is OkResBody => {
   return (
     typeof b?.success === 'boolean' &&
     b?.success === true &&
-    typeof b?.creator?.id === 'number'
+    typeof b?.userName === 'string'
   );
 };
 
-export const createCreator = async (argData: ArgData): Promise<RtnData> => {
-  const reqData = new FormData();
-  // Object.keys(snkcsArgData).forEach((key) => {
-  //   if (snkcsArgData[key as keyof typeof snkcsArgData]) {
-  //     reqData.append(
-  //       `creator[${key}]`,
-  //       snkcsArgData[key as keyof typeof snkcsArgData],
-  //     );
-  //   }
-  // });
-  reqData.append('creator[name]', argData.name);
-  reqData.append('creator[date_of_birth]', argData.dateOfBirth);
-  reqData.append('creator[relation_id]', argData.relationId);
-  if (argData.genderId) {
-    reqData.append('creator[gender_id]', argData.genderId);
-  }
-  if (argData.avatar) {
-    reqData.append('creator[avatar]', argData.avatar);
-  }
-
+export const create = async (argData: ArgData): Promise<RtnData> => {
+  const reqData = {
+    family: {
+      email: argData.email,
+      relationId: argData.relationId,
+    },
+  };
   let isSuccess = false;
+  let userName;
   try {
-    const response = await requireUserAuthApi.post('users/me/creators', {
-      // headers: { 'content-type': 'multipart/form-data' },
-      body: reqData,
-    });
+    const response = await requireUserAuthApi.post(
+      `creators/${argData.creatorId}/families`,
+      {
+        json: snakecaseKeys(reqData, { deep: true }),
+      },
+    );
     const body = (await response.json()) as unknown;
     if (!isOkResBody(body)) {
       throw new ApiError(
@@ -61,6 +53,7 @@ export const createCreator = async (argData: ArgData): Promise<RtnData> => {
       );
     }
     isSuccess = body.success;
+    userName = body.userName;
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;
@@ -78,5 +71,5 @@ export const createCreator = async (argData: ArgData): Promise<RtnData> => {
     }
   }
 
-  return { isSuccess };
+  return { isSuccess, userName };
 };

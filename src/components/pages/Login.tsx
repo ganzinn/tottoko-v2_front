@@ -29,33 +29,33 @@ export const Login: VFC<Props> = ({
   submitBtnProps = {},
 }) => (
   <Center>
-    <Card width="md" px={10} py={8}>
-      <Heading as="h3" fontSize={26} textAlign="center">
-        ログイン
-      </Heading>
-      <Spacer h={6} />
-      <form onSubmit={onSubmit}>
-        <Stack spacing={4}>
-          <ApiMessagesArea {...{ apiMessages }} />
-          <CmnInput {...emailProps} labelName="メールアドレス" />
-          <PasswordInput {...passwordProps} />
-          <Text textAlign="right" fontSize={14}>
-            パスワードを忘れた方は
-            <Link
-              as={NavLink}
-              to={PasswordResetEntryPath}
-              color="blue.500"
-              fontWeight="semibold"
-            >
-              こちら
-            </Link>
-          </Text>
-        </Stack>
-        <Spacer h={8} />
-        <BaseButton {...submitBtnProps} type="submit" width="full">
+    <Card width="xl" px={10} py={8}>
+      <Stack spacing={6}>
+        <Heading as="h3" fontSize={26} textAlign="center">
           ログイン
-        </BaseButton>
-      </form>
+        </Heading>
+        <ApiMessagesArea {...{ apiMessages }} />
+        <form onSubmit={onSubmit}>
+          <Stack spacing={4}>
+            <CmnInput {...emailProps} labelName="メールアドレス" />
+            <PasswordInput {...passwordProps} />
+            <Text textAlign="right" fontSize={14}>
+              <Link
+                as={NavLink}
+                to={PasswordResetEntryPath}
+                color="blue.500"
+                fontWeight="semibold"
+              >
+                パスワードを忘れた方はこちら
+              </Link>
+            </Text>
+          </Stack>
+          <Spacer h={8} />
+          <BaseButton {...submitBtnProps} type="submit" width="full">
+            ログイン
+          </BaseButton>
+        </form>
+      </Stack>
     </Card>
   </Center>
 );
