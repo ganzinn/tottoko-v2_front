@@ -15,10 +15,10 @@ type FormInputData = {
   dateOfBirth: string;
   relationId: string;
   genderId?: string;
-  avatar?: FileList;
+  images?: FileList;
 };
 
-export type ApiInputData = Omit<FormInputData, 'avatar'> & { avatar?: File };
+export type ApiInputData = Omit<FormInputData, 'images'> & { avatar?: File };
 
 export const EnhancedCreatorEntry: VFC = () => {
   const [apiError, setApiError] = useState<ApiError | null>(null);
@@ -55,7 +55,10 @@ export const EnhancedCreatorEntry: VFC = () => {
   const onSubmit: SubmitHandler<FormInputData> = async (formInputData) => {
     const apiInputData: ApiInputData = {
       ...formInputData,
-      avatar: formInputData.avatar ? formInputData.avatar[0] : undefined,
+      avatar:
+        formInputData.images && formInputData.images[0]
+          ? formInputData.images[0]
+          : undefined,
     };
     try {
       const { isSuccess } = await createCreator(apiInputData);
@@ -133,22 +136,22 @@ export const EnhancedCreatorEntry: VFC = () => {
     if (!images) return true;
     const [avatar] = images;
     if (!avatar) return true;
-    const fsMb = avatar?.size / (1024 * 1024);
-    if (fsMb && fsMb > 3) {
+    const fsMb = avatar.size / (1024 * 1024);
+    if (fsMb && fsMb > 1) {
       return '画像サイズは1MB以下にしてください';
     }
-    if (!['image/jpeg', 'image/png'].includes(avatar?.type)) {
+    if (!['image/jpeg', 'image/png'].includes(avatar.type)) {
       return 'jpeg, pngのファイル形式で指定してください';
     }
 
     return true;
   };
   const avatarProps = {
-    ...register('avatar', {
+    ...register('images', {
       validate: avatarValidate,
     }),
-    isInvalid: !!errors?.avatar,
-    errorTypes: errors?.avatar?.types,
+    isInvalid: !!errors?.images,
+    errorTypes: errors?.images?.types,
   };
 
   const submitBtnProps = {
