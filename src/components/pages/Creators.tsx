@@ -1,5 +1,5 @@
 import { VFC } from 'react';
-import { Heading, Center, Box, Stack } from '@chakra-ui/react';
+import { Heading, Center, Box, Stack, Spacer } from '@chakra-ui/react';
 
 import { Card } from 'components/atoms/Card';
 import { Creator } from 'feature/models/creator';
@@ -38,6 +38,7 @@ export const Creators: VFC<Props> = ({
           creators={creators}
         />
       </Stack>
+      <Spacer h={8} />
     </Card>
   </Center>
 );

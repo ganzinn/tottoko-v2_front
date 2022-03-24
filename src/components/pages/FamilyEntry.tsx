@@ -33,7 +33,7 @@ export const FamilyEntry: VFC<Props> = memo(
       <Card width="xl" px={10} py={8}>
         <Stack spacing={6}>
           <Heading as="h3" fontSize={26} textAlign="center">
-            作品を閲覧できる家族の追加
+            家族の追加
           </Heading>
           <ApiMessagesArea apiMessages={apiMessages} />
           {getCreatorIsLoading && <DataLoading />}
