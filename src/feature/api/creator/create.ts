@@ -57,7 +57,7 @@ export const createCreator = async (argData: ArgData): Promise<RtnData> => {
     if (!isOkResBody(body)) {
       throw new ApiError(
         'システムエラー：サーバー・クライアント間矛盾',
-        'refresh:ResBodyUnexpected',
+        'ResBodyUnexpected',
       );
     }
     isSuccess = body.success;
