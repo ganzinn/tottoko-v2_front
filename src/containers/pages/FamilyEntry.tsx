@@ -61,7 +61,7 @@ export const EnhancedFamilyEntry: VFC = () => {
     apiErrorMessage: relationError?.displayMessages,
     isInvalid: !!errors?.relationId,
     errorTypes: errors?.relationId?.types,
-    labelName: data?.creator ? `${data?.creator.name}さんとの関係` : '',
+    labelName: data?.creator ? `${data?.creator.name}さんとの関係` : '関係',
   };
 
   const submitBtnProps = {
@@ -102,7 +102,6 @@ export const EnhancedFamilyEntry: VFC = () => {
 
   return (
     <FamilyEntry
-      creator={data?.creator}
       getCreatorIsLoading={getCreatorIsLoading}
       onSubmit={handleSubmit(onSubmit)}
       apiMessages={

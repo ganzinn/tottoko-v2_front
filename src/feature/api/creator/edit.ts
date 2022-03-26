@@ -2,7 +2,7 @@ import { HTTPError } from 'ky';
 // import snakecaseKeys from 'snakecase-keys';
 
 import { ApiError, isErrResBody, requireUserAuthApi } from 'feature/api';
-import { ApiInputData } from 'containers/pages/CreatorEntry';
+import { ApiInputData } from 'containers/pages/CreatorEdit';
 
 type ArgData = ApiInputData;
 
@@ -12,47 +12,35 @@ type RtnData = {
 
 type OkResBody = {
   success: boolean;
-  creator: {
-    id: string;
-  };
 };
 
 const isOkResBody = (arg: unknown): arg is OkResBody => {
   const b = arg as OkResBody;
 
-  return (
-    typeof b?.success === 'boolean' &&
-    b?.success === true &&
-    typeof b?.creator?.id === 'number'
-  );
+  return typeof b?.success === 'boolean' && b?.success === true;
 };
 
-export const create = async (argData: ArgData): Promise<RtnData> => {
+export const edit = async (argData: ArgData): Promise<RtnData> => {
   const reqData = new FormData();
-  // Object.keys(snkcsArgData).forEach((key) => {
-  //   if (snkcsArgData[key as keyof typeof snkcsArgData]) {
-  //     reqData.append(
-  //       `creator[${key}]`,
-  //       snkcsArgData[key as keyof typeof snkcsArgData],
-  //     );
-  //   }
-  // });
   reqData.append('creator[name]', argData.name);
   reqData.append('creator[date_of_birth]', argData.dateOfBirth);
-  reqData.append('creator[relation_id]', argData.relationId);
-  if (argData.genderId) {
-    reqData.append('creator[gender_id]', argData.genderId);
-  }
+  reqData.append(
+    'creator[gender_id]',
+    argData.genderId ? argData.genderId : '',
+  );
   if (argData.avatar) {
     reqData.append('creator[avatar]', argData.avatar);
+  }
+  if (!argData.avatar && argData.regdAvatarDel) {
+    reqData.append('regd_avatar_del', argData.regdAvatarDel.toString());
   }
 
   let isSuccess = false;
   try {
-    const response = await requireUserAuthApi.post('users/me/creators', {
-      // headers: { 'content-type': 'multipart/form-data' },
-      body: reqData,
-    });
+    const response = await requireUserAuthApi.put(
+      `creators/${argData.creatorId}`,
+      { body: reqData },
+    );
     const body = (await response.json()) as unknown;
     if (!isOkResBody(body)) {
       throw new ApiError(
