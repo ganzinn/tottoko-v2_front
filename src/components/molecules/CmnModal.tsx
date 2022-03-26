@@ -36,7 +36,7 @@ export const CmnModal: VFC<CmnModalProps> = ({
     <ModalContent p={4}>
       <ModalHeader textAlign="center">{title}</ModalHeader>
       <ApiMessagesArea {...{ apiMessages }} />
-      <ModalFooter justifyContent="space-around">
+      <ModalFooter justifyContent="space-between" gap={2}>
         <BaseButton variant="ghost" onClick={onModalClose} {...{ isLoading }}>
           {cancelBtnLabel}
         </BaseButton>
