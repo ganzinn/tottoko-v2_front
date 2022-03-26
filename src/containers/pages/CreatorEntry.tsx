@@ -4,7 +4,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
 
 import { CreatorEntry } from 'components/pages/CreatorEntry';
-import { createCreator } from 'feature/api/creator/create';
+import { create as createCreator } from 'feature/api/creator/create';
 import { useToast } from '@chakra-ui/react';
 import { selectOptions, SeletcOptions } from 'feature/api/select';
 import { ApiError } from 'feature/api';

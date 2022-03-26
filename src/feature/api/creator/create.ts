@@ -27,7 +27,7 @@ const isOkResBody = (arg: unknown): arg is OkResBody => {
   );
 };
 
-export const createCreator = async (argData: ArgData): Promise<RtnData> => {
+export const create = async (argData: ArgData): Promise<RtnData> => {
   const reqData = new FormData();
   // Object.keys(snkcsArgData).forEach((key) => {
   //   if (snkcsArgData[key as keyof typeof snkcsArgData]) {
