@@ -84,79 +84,76 @@ export const Creator: VFC<Props> = ({
             お子さま情報
           </Heading>
           <ApiMessagesArea {...{ apiMessages }} />
-          {isLoading && <DataLoading />}
-          {creator && (
-            <>
-              <Stack spacing={4}>
-                {creator.editPermission && (
-                  <Box display="flex" justifyContent="right" gap={4}>
-                    <BaseButton
-                      h={10}
-                      variant="outline"
-                      onClick={removeOnClick}
-                    >
-                      削除
-                    </BaseButton>
-                    <BaseButton h={10} variant="outline" onClick={editOnClick}>
-                      編集
-                    </BaseButton>
-                  </Box>
-                )}
-                <Box display="flex" alignItems="center">
-                  <Avatar size="2xl" src={creator.originalAvatarUrl} />
-                  <Stack spacing={2} ml={6}>
-                    <ItemDisplay label="おなまえ" item={creator?.name} />
-                    <ItemDisplay
-                      label="生年月日"
-                      item={formatedDob(creator?.dateOfBirth)}
-                    />
-                    <ItemDisplay label="性別" item={creator?.gender?.value} />
-                  </Stack>
-                </Box>
-              </Stack>
-              <Box textAlign="right">
-                <BaseLink {...familyEntryLinkProps}>
-                  ＋作品を閲覧できる家族の追加
-                </BaseLink>
+          <Stack spacing={4}>
+            {creator?.editPermission && (
+              <Box display="flex" justifyContent="right" gap={4}>
+                <BaseButton h={10} variant="outline" onClick={removeOnClick}>
+                  削除
+                </BaseButton>
+                <BaseButton h={10} variant="outline" onClick={editOnClick}>
+                  編集
+                </BaseButton>
               </Box>
-              <Table variant="simple">
-                <TableCaption fontSize="xm" fontWeight="bold" placement="top">
-                  作品を閲覧できる家族
-                </TableCaption>
-                <Thead>
-                  <Tr>
-                    <Th color="gray.500">ユーザー名</Th>
-                    <Th color="gray.500">お子さまとの関係</Th>
-                    <Th color="gray.500">家族設定解除</Th>
+            )}
+            <Box display="flex" alignItems="center">
+              <Avatar size="2xl" src={creator?.originalAvatarUrl} />
+              <Stack spacing={2} ml={6}>
+                <ItemDisplay label="おなまえ" item={creator?.name} />
+                <ItemDisplay
+                  label="生年月日"
+                  item={formatedDob(creator?.dateOfBirth)}
+                />
+                <ItemDisplay label="性別" item={creator?.gender?.value} />
+              </Stack>
+            </Box>
+          </Stack>
+          {creator?.editPermission && (
+            <Box textAlign="right">
+              <BaseLink {...familyEntryLinkProps}>
+                ＋作品を閲覧できる家族の追加
+              </BaseLink>
+            </Box>
+          )}
+          <Table variant="simple">
+            <TableCaption fontSize="xm" fontWeight="bold" placement="top">
+              作品を閲覧できる家族
+            </TableCaption>
+            <Thead>
+              <Tr>
+                <Th color="gray.500">ユーザー名</Th>
+                <Th color="gray.500">お子さまとの関係</Th>
+                <Th color="gray.500">家族設定解除</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {creatorFamilies &&
+                creatorFamilies.map((family) => (
+                  <Tr key={family.id}>
+                    <Td h="4.6rem" fontSize="md" color="gray.800">
+                      {family.user.name}
+                    </Td>
+                    <Td h="4.6rem" fontSize="md" color="gray.800">
+                      {family.relation.value}
+                    </Td>
+                    <Td>
+                      {family.familyRemovePermission && (
+                        <BaseButton
+                          h={10}
+                          variant="outline"
+                          onClick={() => familyRemoveOnClick(family)}
+                        >
+                          解除
+                        </BaseButton>
+                      )}
+                    </Td>
                   </Tr>
-                </Thead>
-                <Tbody>
-                  {creatorFamilies &&
-                    creatorFamilies.map((family) => (
-                      <Tr key={family.id}>
-                        <Td h="4.6rem" fontSize="md" color="gray.800">
-                          {family.user.name}
-                        </Td>
-                        <Td h="4.6rem" fontSize="md" color="gray.800">
-                          {family.relation.value}
-                        </Td>
-                        <Td>
-                          {family.familyRemovePermission && (
-                            <BaseButton
-                              h={10}
-                              variant="outline"
-                              onClick={() => familyRemoveOnClick(family)}
-                            >
-                              解除
-                            </BaseButton>
-                          )}
-                        </Td>
-                      </Tr>
-                    ))}
-                </Tbody>
-              </Table>
-              {isFetching && <DataLoading text="データ更新確認中..." />}
-            </>
+                ))}
+            </Tbody>
+          </Table>
+          {isLoading ? (
+            <DataLoading />
+          ) : (
+            isFetching && <DataLoading text="データ更新確認中..." />
           )}
         </Stack>
         <Spacer h={8} />
