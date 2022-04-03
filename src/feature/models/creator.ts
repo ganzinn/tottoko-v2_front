@@ -9,6 +9,8 @@ export type Creator = {
   avatarUrl?: string;
 };
 
+export type ApiCreator = Omit<Creator, 'id'> & { id: string | number };
+
 export type CreatorDetail = Omit<Creator, 'avatarUrl'> & {
   gender?: {
     id: string;
@@ -16,6 +18,10 @@ export type CreatorDetail = Omit<Creator, 'avatarUrl'> & {
   };
   originalAvatarUrl?: string;
   editPermission: boolean;
+};
+
+export type ApiCreatorDetail = Omit<CreatorDetail, 'id'> & {
+  id: string | number;
 };
 
 export type CreatorFamily = {
@@ -29,4 +35,8 @@ export type CreatorFamily = {
     value: string;
   };
   familyRemovePermission: boolean;
+};
+
+export type ApiCreatorFamily = Omit<CreatorFamily, 'id'> & {
+  id: string | number;
 };
