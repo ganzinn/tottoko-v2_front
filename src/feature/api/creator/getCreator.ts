@@ -1,7 +1,12 @@
 import { HTTPError } from 'ky';
 
 import { ApiError, requireUserAuthApi, isErrResBody } from 'feature/api';
-import { CreatorDetail, CreatorFamily } from 'feature/models/creator';
+import {
+  ApiCreatorDetail,
+  ApiCreatorFamily,
+  CreatorDetail,
+  CreatorFamily,
+} from 'feature/models/creator';
 
 type ArgData = {
   creatorId?: string;
@@ -14,12 +19,12 @@ export type RtnData = {
 
 type OkResBody = {
   success: boolean;
-  creator: CreatorDetail;
-  creatorFamilies: CreatorFamily[];
+  creator: ApiCreatorDetail;
+  creatorFamilies: ApiCreatorFamily[];
 };
 
-const isCreator = (arg: unknown): arg is CreatorDetail => {
-  const b = arg as CreatorDetail;
+const isCreator = (arg: unknown): arg is ApiCreatorDetail => {
+  const b = arg as ApiCreatorDetail;
 
   return (
     (typeof b.id === 'string' || typeof b.id === 'number') &&
@@ -39,8 +44,8 @@ const isCreator = (arg: unknown): arg is CreatorDetail => {
   );
 };
 
-const isCreatorFamily = (arg: unknown): arg is CreatorFamily => {
-  const b = arg as CreatorFamily;
+const isCreatorFamily = (arg: unknown): arg is ApiCreatorFamily => {
+  const b = arg as ApiCreatorFamily;
 
   return (
     (typeof b.id === 'string' || typeof b.id === 'number') &&
@@ -82,8 +87,16 @@ export const getCreator = async ({ creatorId }: ArgData): Promise<RtnData> => {
         'getCreator:ResBodyUnexpected',
       );
     }
-    creator = body.creator;
-    creatorFamilies = body.creatorFamilies;
+    creator =
+      typeof body.creator.id === 'number'
+        ? { ...body.creator, id: body.creator.id.toString() }
+        : { ...body.creator, id: body.creator.id };
+
+    creatorFamilies = body.creatorFamilies.map((creatorFamily) =>
+      typeof creatorFamily.id === 'number'
+        ? { ...creatorFamily, id: creatorFamily.id.toString() }
+        : { ...creatorFamily, id: creatorFamily.id },
+    );
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;
