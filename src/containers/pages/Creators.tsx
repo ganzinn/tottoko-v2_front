@@ -12,7 +12,7 @@ export const EnhancedCreators: VFC = () => {
   const { data, error, isLoading, isFetching } = useQuery<
     { creators?: Creator[] },
     ApiError
-  >(['creators'], getCreators);
+  >(['creators'], () => getCreators());
 
   useLogout(error);
 

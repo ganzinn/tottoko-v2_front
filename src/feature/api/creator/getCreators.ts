@@ -1,7 +1,11 @@
 import { HTTPError } from 'ky';
 
 import { ApiError, requireUserAuthApi, isErrResBody } from 'feature/api';
-import { Creator } from 'feature/models/creator';
+import { ApiCreator, Creator } from 'feature/models/creator';
+
+type ArgData = {
+  querys: string[];
+};
 
 type RtnData = {
   creators: Creator[];
@@ -9,11 +13,11 @@ type RtnData = {
 
 type OkResBody = {
   success: boolean;
-  creators: Creator[];
+  creators: ApiCreator[];
 };
 
-const isCreator = (arg: unknown): arg is Creator => {
-  const b = arg as Creator;
+const isCreator = (arg: unknown): arg is ApiCreator => {
+  const b = arg as ApiCreator;
 
   return (
     (typeof b.id === 'string' || typeof b.id === 'number') &&
@@ -39,10 +43,13 @@ const isOkResBody = (arg: unknown): arg is OkResBody => {
   );
 };
 
-export const getCreators = async (): Promise<RtnData> => {
+export const getCreators = async (argData?: ArgData): Promise<RtnData> => {
+  const path = argData?.querys
+    ? `users/me/creators?${argData.querys.join('&')}`
+    : 'users/me/creators';
   let creators;
   try {
-    const response = await requireUserAuthApi.get('users/me/creators');
+    const response = await requireUserAuthApi.get(path);
     const body = (await response.json()) as unknown;
     if (!isOkResBody(body)) {
       throw new ApiError(
@@ -50,7 +57,13 @@ export const getCreators = async (): Promise<RtnData> => {
         'getCreators:ResBodyUnexpected',
       );
     }
-    creators = body.creators;
+    // idをnumber型からstring型へ変換
+    creators = body.creators.map(
+      (creator) =>
+        typeof creator.id === 'number'
+          ? { ...creator, id: creator.id.toString() }
+          : { ...creator, id: creator.id }, // typescriptがidの型を認識してくれないため展開
+    );
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;
