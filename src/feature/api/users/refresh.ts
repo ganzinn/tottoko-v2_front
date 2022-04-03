@@ -70,6 +70,15 @@ export const refresh = async (): Promise<RtnData> => {
           );
         } else if (
           error.response.status === 401 &&
+          errorBody.code === 'refresh_token_not_set'
+        ) {
+          throw new ApiError(
+            '有効なセッションがございません。ログインしなおしてください',
+            `refresh:${errorBody.code}`,
+            'logout',
+          );
+        } else if (
+          error.response.status === 401 &&
           errorBody.code === 'refresh_jti_not_include'
         ) {
           throw new ApiError(
