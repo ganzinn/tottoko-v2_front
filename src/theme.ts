@@ -9,4 +9,22 @@ export const theme = extendTheme({
       },
     },
   },
+  components: {
+    CheckCard: {
+      baseStyle: {
+        borderWidth: '1px',
+        borderRadius: 'lg',
+        p: '2',
+        bg: 'white',
+        transitionProperty: 'common',
+        transitionDuration: 'normal',
+        _hover: { borderColor: 'gray.300' },
+        _checked: {
+          borderColor: 'blue.500',
+          // blue.500の透明度1.0をrgbaに変換
+          boxShadow: '0px 0px 0px 1px rgba(49, 130, 206, 1.0)',
+        },
+      },
+    },
+  },
 });
