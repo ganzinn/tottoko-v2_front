@@ -21,13 +21,17 @@ import { EnhancedWorkEdit } from 'containers/pages/WorkEdit';
 import { EnhancedCreator } from 'containers/pages/Creator';
 import { EnhancedCreatorEdit } from 'containers/pages/CreatorEdit';
 import { EnhancedFamilyEntry } from 'containers/pages/FamilyEntry';
+import { RootRedirect } from 'router/RootRedirect';
 import { RequireUserAuth } from 'router/RequireUserAuth';
 
 export const Router: VFC = () => (
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<Layout />}>
-        <Route index element={<EnhancedAbout />} />
+        <Route index element={<RootRedirect />} />
+        <Route path="about">
+          <Route index element={<EnhancedAbout />} />
+        </Route>
         <Route path="users">
           <Route index element={<NotFound />} />
           <Route path="sign_up" element={<EnhancedSignUp />} />

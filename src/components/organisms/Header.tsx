@@ -72,6 +72,7 @@ export const Header: VFC<Props> = ({
       bg="white"
       shadow="sm"
       width="full"
+      h="72px"
     >
       <Box
         onClick={logoOnClick}

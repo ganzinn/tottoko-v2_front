@@ -4,6 +4,7 @@ export type AccessToken = {
 };
 
 export type LoginUser = {
+  id: string;
   name: string;
   email: string;
   avatarUrl?: string | null;

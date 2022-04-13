@@ -37,6 +37,15 @@ export type CreatorFamily = {
   familyRemovePermission: boolean;
 };
 
-export type ApiCreatorFamily = Omit<CreatorFamily, 'id'> & {
+export type ApiCreatorFamily = {
   id: string | number;
+  user: {
+    id: string | number;
+    name: string;
+  };
+  relation: {
+    id: string | number;
+    value: string;
+  };
+  familyRemovePermission: boolean;
 };

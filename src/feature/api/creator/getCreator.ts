@@ -92,11 +92,27 @@ export const getCreator = async ({ creatorId }: ArgData): Promise<RtnData> => {
         ? { ...body.creator, id: body.creator.id.toString() }
         : { ...body.creator, id: body.creator.id };
 
-    creatorFamilies = body.creatorFamilies.map((creatorFamily) =>
-      typeof creatorFamily.id === 'number'
-        ? { ...creatorFamily, id: creatorFamily.id.toString() }
-        : { ...creatorFamily, id: creatorFamily.id },
-    );
+    creatorFamilies = body.creatorFamilies.map((creatorFamily) => {
+      const id =
+        typeof creatorFamily.id === 'number'
+          ? creatorFamily.id.toString()
+          : creatorFamily.id;
+      const userId =
+        typeof creatorFamily.user.id === 'number'
+          ? creatorFamily.user.id.toString()
+          : creatorFamily.user.id;
+      const relationId =
+        typeof creatorFamily.relation.id === 'number'
+          ? creatorFamily.relation.id.toString()
+          : creatorFamily.relation.id;
+
+      return {
+        ...creatorFamily,
+        id,
+        user: { ...creatorFamily.user, id: userId },
+        relation: { ...creatorFamily.relation, id: relationId },
+      };
+    });
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;

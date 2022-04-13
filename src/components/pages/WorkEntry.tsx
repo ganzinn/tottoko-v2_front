@@ -42,7 +42,7 @@ export const WorkEntry: VFC<Props> = ({
     <Card width="xl" px={10} py={8}>
       <Stack spacing={6}>
         <Heading as="h3" fontSize={26} textAlign="center">
-          新規作品投稿
+          作品投稿
         </Heading>
         <ApiMessagesArea {...{ apiMessages }} />
         <form onSubmit={onSubmit}>

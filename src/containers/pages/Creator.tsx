@@ -10,6 +10,7 @@ import { getCreator, RtnData } from 'feature/api/creator/getCreator';
 import { remove } from 'feature/api/creator/remove';
 import { remove as removeFamily } from 'feature/api/family/remove';
 import { CreatorFamily } from 'feature/models/creator';
+import { useAppSelector } from 'store';
 
 export const EnhancedCreator: VFC = () => {
   const { id: creatorId } = useParams();
@@ -60,8 +61,6 @@ export const EnhancedCreator: VFC = () => {
             isClosable: true,
           });
           navigate('/users/me/creators');
-          onRemoveModalClose();
-          setRemoveApiErr(null);
         }
       } catch (removeApiError) {
         if (removeApiError instanceof ApiError) {
@@ -70,7 +69,6 @@ export const EnhancedCreator: VFC = () => {
           // eslint-disable-next-line no-console
           console.error(removeApiError);
         }
-      } finally {
         setIsRemoveLoading(() => false);
       }
     },
@@ -88,6 +86,7 @@ export const EnhancedCreator: VFC = () => {
     null,
   );
   const [selecFamily, setSelectFamily] = useState<CreatorFamily | null>(null);
+  const loginUser = useAppSelector((state) => state.userAuth?.loginUser);
   const familyRemoveOnClick = (family: CreatorFamily) => {
     setSelectFamily(family);
     removeFamilyModalOpen();
@@ -118,10 +117,15 @@ export const EnhancedCreator: VFC = () => {
             status: 'success',
             isClosable: true,
           });
-          setSelectFamily(null);
-          onRemoveFamilyModalClose();
-          setRemoveFamilyApiErr(null);
-          await refetch();
+          if (selecFamily?.user.id === loginUser?.id) {
+            navigate('/users/me/creators');
+          } else {
+            setSelectFamily(null);
+            onRemoveFamilyModalClose();
+            setRemoveFamilyApiErr(null);
+            setIsRemoveFamilyLoading(() => false);
+            await refetch();
+          }
         }
       } catch (removeFamilyApiError) {
         if (removeFamilyApiError instanceof ApiError) {
@@ -130,7 +134,6 @@ export const EnhancedCreator: VFC = () => {
           // eslint-disable-next-line no-console
           console.error(removeFamilyApiError);
         }
-      } finally {
         setIsRemoveFamilyLoading(() => false);
       }
     },
