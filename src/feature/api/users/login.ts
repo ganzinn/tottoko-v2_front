@@ -16,6 +16,7 @@ type OkResBody = {
   token: string;
   expires: number;
   user: {
+    id: string | number;
     name: string;
     email: string;
     avatarUrl?: string | null;
@@ -55,7 +56,10 @@ export const login = async (argData: ArgData): Promise<RtnData> => {
         'refresh:ResBodyUnexpected',
       );
     }
-    const loginUser = body.user;
+    const loginUser =
+      typeof body.user.id === 'number'
+        ? { ...body.user, id: body.user.id.toString() }
+        : { ...body.user, id: body.user.id };
     const accessToken = {
       token: body.token,
       // expires: new Date(body.expires * 1000).toISOString(),
