@@ -56,10 +56,16 @@ export const login = async (argData: ArgData): Promise<RtnData> => {
         'refresh:ResBodyUnexpected',
       );
     }
-    const loginUser =
-      typeof body.user.id === 'number'
-        ? { ...body.user, id: body.user.id.toString() }
-        : { ...body.user, id: body.user.id };
+    const loginUser = (() => {
+      const id =
+        typeof body.user.id === 'number'
+          ? body.user.id.toString()
+          : body.user.id;
+      const avatarUrl =
+        body.user.avatarUrl === null ? undefined : body.user.avatarUrl;
+
+      return { ...body.user, id, avatarUrl };
+    })();
     const accessToken = {
       token: body.token,
       // expires: new Date(body.expires * 1000).toISOString(),
