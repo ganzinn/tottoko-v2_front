@@ -19,7 +19,7 @@ export const EnhancedLogin: VFC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const locationState = location.state as { from: Location };
-  const from = locationState ? locationState.from.pathname : '/';
+  const from = locationState ? locationState.from : '/';
   const {
     register,
     handleSubmit,
@@ -28,7 +28,7 @@ export const EnhancedLogin: VFC = () => {
 
   useEffect(() => {
     if (userAuth) {
-      navigate('/', { replace: true });
+      navigate(from, { replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userAuth]);
@@ -37,7 +37,6 @@ export const EnhancedLogin: VFC = () => {
     try {
       const { userAuth: newUserAuth } = await login(formData);
       dispatch(setUserAuth(newUserAuth));
-      navigate(from, { replace: true });
     } catch (error) {
       if (error instanceof ApiError) {
         setApiMessages(error.displayMessages);

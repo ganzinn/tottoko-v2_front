@@ -1,6 +1,6 @@
 import { useState, VFC } from 'react';
 import { useDisclosure } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { Header } from 'components/organisms/Header';
 import { useAppSelector, useAppDispatch, setUserAuth } from 'store';
@@ -14,6 +14,7 @@ export const EnhancedHeader: VFC = () => {
   const userAuth = useAppSelector((state) => state.userAuth);
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
+  const location = useLocation();
   const navigate = useNavigate();
   const {
     isOpen: isModalOpen,
@@ -25,7 +26,7 @@ export const EnhancedHeader: VFC = () => {
     setIsLoading(() => true);
     try {
       await logout();
-      navigate('/');
+      navigate(location);
       dispatch(setUserAuth(null));
       queryClient.clear();
       onModalClose();

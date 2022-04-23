@@ -88,8 +88,8 @@ export const requireUserAuthApi = defApi.extend({
           const { expires } = userAuth.accessToken;
           const now = new Date().getTime();
           if (now > expires) {
-            // isRefreshing 実装要（前送信のrefreshのレスポンスが返える前に実行するとエラーとなる）
-            // true → 送信しない
+            // 短い間隔でrefreshが連続送信されると、タイミングにより（refresh_jti書き換え後の場合）エラー（Invalid refresh_jti）となる
+            // isRefreshing 等の実装要（true → 送信しない＆ falseになったタイミングでrefreshはせず本リクエストのみ送信 などの実装検討要）
             const { userAuth: newUserAuth } = await refresh();
             if (newUserAuth) {
               store.dispatch(setUserAuth(newUserAuth));
@@ -128,6 +128,22 @@ export const requireUserAuthApi = defApi.extend({
         }
 
         return response;
+      },
+    ],
+  },
+});
+
+export const noRefreshApi = defApi.extend({
+  hooks: {
+    beforeRequest: [
+      (request) => {
+        const { userAuth } = store.getState();
+        if (userAuth) {
+          request.headers.set(
+            'Authorization',
+            `Bearer ${userAuth.accessToken.token}`,
+          );
+        }
       },
     ],
   },

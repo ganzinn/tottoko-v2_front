@@ -28,14 +28,16 @@ export const CmnInput = forwardRef<CmnInputProps, 'input'>(
     ref,
   ) => (
     <FormControl id={id} isRequired={isRequired} isInvalid={isInvalid}>
-      <FormLabel fontWeight="bold" mb={1} display="flex" alignItems="center">
-        <Text>{labelName}</Text>
-        {optionalLabel && (
-          <Text fontSize="xs" ml={1} p="2px" bgColor="gray.100">
-            任意
-          </Text>
-        )}
-      </FormLabel>
+      {!!labelName && (
+        <FormLabel fontWeight="bold" mb={1} display="flex" alignItems="center">
+          <Text>{labelName}</Text>
+          {optionalLabel && (
+            <Text fontSize="xs" ml={1} p="2px" bgColor="gray.100">
+              任意
+            </Text>
+          )}
+        </FormLabel>
+      )}
       <BaseInput ref={ref} type={type} {...rest} />
       <EnhancedFormErrorMessageArea errorTypes={errorTypes} />
     </FormControl>

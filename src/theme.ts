@@ -1,6 +1,10 @@
 import { extendTheme } from '@chakra-ui/react';
 
 export const theme = extendTheme({
+  // fonts: {
+  //   heading: 'cursive,"Hiragino Kaku Gothic ProN", sans-serif',
+  //   body: '"Hiragino Sans W4", sans-serif',
+  // },
   styles: {
     global: {
       body: {
