@@ -145,7 +145,7 @@ export const Header: VFC<Props> = ({
               <Avatar
                 title={loginUser.name}
                 size="sm"
-                src={loginUser.avatarUrl ? loginUser.avatarUrl : undefined}
+                src={loginUser.avatarUrl}
               />
             }
             display={{ base: 'none', md: 'block' }}
