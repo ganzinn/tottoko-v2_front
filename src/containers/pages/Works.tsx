@@ -95,6 +95,11 @@ export const EnhancedWorks: VFC = () => {
         JSON.stringify(searchParams.getAll('creator_ids[]')) ===
         JSON.stringify(['none'])
       ),
+      // 下記オプションは通常ページングのあるクエリーに用いる。
+      // 効果：新しいデータを取得し終わるまで今のデータを使用できる→ data が undefined にならない。よってスムーズな遷移が可能となる
+      // しかし、このアプリの作品一覧取得のsearchQueryは、ページ取得だけでなく、作者の絞り込み等の検索用途にも使用しており
+      // 画面遷移のタイミングで前のデータを残さず新しいデータを取得してることが明示的にわかったほうがUI的に良いため今回は使用しない。
+      // keepPreviousData: true,
     },
   );
 
