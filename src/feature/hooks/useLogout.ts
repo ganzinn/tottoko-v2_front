@@ -21,7 +21,7 @@ export const useLogout = (error: ApiError | null) => {
         status: 'error',
         isClosable: true,
       });
-      navigate('/users/sessions/login', { state: { from: location } });
+      navigate(location, { state: { from: location } });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error]);
