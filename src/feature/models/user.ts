@@ -7,7 +7,7 @@ export type LoginUser = {
   id: string;
   name: string;
   email: string;
-  avatarUrl?: string | null;
+  avatarUrl?: string;
 };
 
 export type UserAuth = {
