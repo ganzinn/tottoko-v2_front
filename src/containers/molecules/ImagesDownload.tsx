@@ -18,7 +18,7 @@ export const ImagesDownload: VFC<Props> = memo(({ imageUrls }) => {
     const imagePromises = imageUrls.map(async (imageSrc) => {
       const response = await ky(imageSrc);
       const blob = await response.blob();
-      const fileName = imageSrc.slice(imageSrc.lastIndexOf('/') + 1);
+      const fileName = decodeURI(imageSrc.slice(imageSrc.lastIndexOf('/') + 1));
 
       return { blob, fileName };
     });
