@@ -26,7 +26,7 @@ export const EnhancedWork: VFC = () => {
     // isFetching,
     // refetch
   } = useQuery<RtnData, ApiError>(
-    ['creator', workId],
+    ['works', workId],
     () => getWork({ workId }),
     { enabled: !!workId },
   );
