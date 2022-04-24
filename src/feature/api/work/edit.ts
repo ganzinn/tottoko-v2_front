@@ -2,13 +2,19 @@ import { HTTPError } from 'ky';
 // import snakecaseKeys from 'snakecase-keys';
 
 import { ApiError, isErrResBody, requireUserAuthApi } from 'feature/api';
-import { ApiInputData } from 'containers/pages/WorkEntry';
 
-type ArgData = ApiInputData;
+type ArgData = {
+  workId: string;
+  images: File[];
+  creatorId: string;
+  createdDate: string;
+  scopeId: string;
+  title?: string;
+  description?: string;
+};
 
 type RtnData = {
-  isSuccess: boolean;
-  workId: string;
+  success: boolean;
 };
 
 type OkResBody = {
@@ -28,21 +34,22 @@ const isOkResBody = (arg: unknown): arg is OkResBody => {
   );
 };
 
-export const create = async (argData: ArgData): Promise<RtnData> => {
+export const edit = async (argData: ArgData): Promise<RtnData> => {
   const reqData = new FormData();
+
   argData.images.forEach((image) => {
     reqData.append('work[images][]', image);
   });
+
   reqData.append('work[creator_id]', argData.creatorId);
   reqData.append('work[date]', argData.createdDate);
   reqData.append('work[scope_id]', argData.scopeId);
   reqData.append('work[title]', argData.title ?? '');
   reqData.append('work[description]', argData.description ?? '');
 
-  let isSuccess = false;
-  let workId;
+  let success = false;
   try {
-    const response = await requireUserAuthApi.post('users/me/works', {
+    const response = await requireUserAuthApi.put(`works/${argData.workId}`, {
       body: reqData,
     });
     const body = (await response.json()) as unknown;
@@ -52,9 +59,7 @@ export const create = async (argData: ArgData): Promise<RtnData> => {
         'ResBodyUnexpected',
       );
     }
-    isSuccess = body.success;
-    workId =
-      typeof body.work.id === 'number' ? body.work.id.toString() : body.work.id;
+    success = body.success;
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;
@@ -72,5 +77,5 @@ export const create = async (argData: ArgData): Promise<RtnData> => {
     }
   }
 
-  return { isSuccess, workId };
+  return { success };
 };

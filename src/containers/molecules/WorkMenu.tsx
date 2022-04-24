@@ -47,7 +47,7 @@ export const WorkMenu: VFC<Props> = ({ workId, permission }) => {
           status: 'success',
           isClosable: true,
         });
-        navigate('/users/me/creators');
+        navigate(`/users/me/works`);
       }
     } catch (error) {
       if (error instanceof ApiError) {

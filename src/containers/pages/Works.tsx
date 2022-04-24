@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useMemo, useState, VFC } from 'react';
 import { useQuery } from 'react-query';
 import { Flex, Stack } from '@chakra-ui/react';
