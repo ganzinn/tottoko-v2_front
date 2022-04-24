@@ -36,12 +36,8 @@ export const create = async (argData: ArgData): Promise<RtnData> => {
   reqData.append('work[creator_id]', argData.creatorId);
   reqData.append('work[date]', argData.createdDate);
   reqData.append('work[scope_id]', argData.scopeId);
-  if (argData.title) {
-    reqData.append('work[title]', argData.title);
-  }
-  if (argData.description) {
-    reqData.append('work[description]', argData.description);
-  }
+  reqData.append('work[title]', argData.title ?? '');
+  reqData.append('work[description]', argData.description ?? '');
 
   let isSuccess = false;
   let workId;
