@@ -2,11 +2,14 @@ import { HTTPError } from 'ky';
 
 import { UserAuth } from 'feature/models/user';
 import { ApiError, defApi, isErrResBody } from 'feature/api';
-import { FormData } from 'containers/pages/Login';
 
-type ArgData = FormData;
+type ArgData = {
+  password: string;
+  token: string | null;
+};
 
 type RtnData = {
+  success: boolean;
   userAuth: UserAuth;
 };
 
@@ -39,23 +42,31 @@ const isOkResBody = (arg: unknown): arg is OkResBody => {
   );
 };
 
-export const login = async (argData: ArgData): Promise<RtnData> => {
+export const emailChange = async (argData: ArgData): Promise<RtnData> => {
+  if (argData.token === null) {
+    throw new ApiError('tokenの指定に不備があります', 'emailChange:TokenNull');
+  }
   const reqData = {
-    auth: argData,
+    user: {
+      password: argData.password,
+    },
   };
-  let userAuth = null;
+  let success;
+  let userAuth;
   try {
-    const response = await defApi.post('users/sessions/login', {
+    const response = await defApi.put('users/me/email', {
       credentials: 'include',
-      ...{ json: reqData },
+      json: reqData,
+      headers: { Authorization: `Bearer ${argData.token}` },
     });
     const body = (await response.json()) as unknown;
     if (!isOkResBody(body)) {
       throw new ApiError(
         'システムエラー：サーバー・クライアント間矛盾',
-        'login:ResBodyUnexpected',
+        'emailChange:ResBodyUnexpected',
       );
     }
+    success = body.success;
     const loginUser = (() => {
       const id =
         typeof body.user.id === 'number'
@@ -89,5 +100,5 @@ export const login = async (argData: ArgData): Promise<RtnData> => {
     }
   }
 
-  return { userAuth };
+  return { success, userAuth };
 };

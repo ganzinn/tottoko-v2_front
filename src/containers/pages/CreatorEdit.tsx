@@ -34,7 +34,7 @@ export const EnhancedCreatorEdit: VFC = () => {
     error: getCreatorError,
     isLoading: getCreatorIsLoading,
   } = useQuery<RtnData, ApiError>(
-    ['creator', creatorId],
+    ['creators', creatorId],
     () => getCreator({ creatorId }),
     { enabled: !!creatorId },
   );

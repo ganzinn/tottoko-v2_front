@@ -1,4 +1,4 @@
-import { Button, ButtonProps, forwardRef } from '@chakra-ui/react';
+import { Box, Button, ButtonProps, forwardRef } from '@chakra-ui/react';
 
 export type BaseButtonProps = ButtonProps;
 
@@ -13,7 +13,7 @@ export const BaseButton = forwardRef<BaseButtonProps, 'button'>(
       size="lg"
       fontSize="md"
     >
-      {children}
+      <Box whiteSpace="pre-wrap">{children}</Box>
     </Button>
   ),
 );
