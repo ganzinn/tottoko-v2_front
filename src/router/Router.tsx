@@ -8,6 +8,7 @@ import { EnhancedSignUp } from 'containers/pages/SignUp';
 import { EnhancedPasswordResetEntry } from 'containers/pages/PasswordResetEntry';
 import { EnhancedLogin } from 'containers/pages/Login';
 import { EnhancedMyProfile } from 'containers/pages/MyProfile';
+import { EnhancedMyprofileEdit } from 'containers/pages/MyprofileEdit';
 import { EnhancedActivate } from 'containers/pages/Activate';
 import { EnhancedPasswordReset } from 'containers/pages/PasswordReset';
 import { EnhancedEmailChangeEntry } from 'containers/pages/EmailChangeEntry';
@@ -46,6 +47,7 @@ export const Router: VFC = () => (
             <Route path="password_reset" element={<EnhancedPasswordReset />} />
             <Route path="email_change_entry" element={<RequireUserAuth><EnhancedEmailChangeEntry /></RequireUserAuth>} />
             <Route path="email_change" element={<EnhancedEmailChange />} />
+            <Route path="edit" element={<RequireUserAuth><EnhancedMyprofileEdit /></RequireUserAuth>} />
             <Route path="creators">
               <Route index element={<RequireUserAuth><EnhancedCreators /></RequireUserAuth>} />
               <Route path="entry" element={<RequireUserAuth><EnhancedCreatorEntry /></RequireUserAuth>} />
