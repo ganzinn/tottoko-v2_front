@@ -17,7 +17,7 @@ export const EnhancedCreator: VFC = () => {
   const { data, error, isLoading, isFetching, refetch } = useQuery<
     RtnData,
     ApiError
-  >(['creator', creatorId], () => getCreator({ creatorId }), {
+  >(['creators', creatorId], () => getCreator({ creatorId }), {
     enabled: !!creatorId,
   });
 
