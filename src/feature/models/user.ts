@@ -14,3 +14,9 @@ export type UserAuth = {
   accessToken: AccessToken;
   loginUser: LoginUser;
 } | null;
+
+export type User = {
+  name: string;
+  email: string;
+  originalAvatarUrl: string;
+};
