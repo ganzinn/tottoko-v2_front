@@ -8,7 +8,6 @@ type ArgData = FormData;
 
 type RtnData = {
   userAuth: UserAuth;
-  errorMessages?: string[];
 };
 
 type OkResBody = {
@@ -27,15 +26,16 @@ const isOkResBody = (arg: unknown): arg is OkResBody => {
   const b = arg as OkResBody;
 
   return (
-    typeof b?.success === 'boolean' &&
-    b?.success === true &&
-    typeof b?.token === 'string' &&
-    typeof b?.expires === 'number' &&
-    new Date(b?.expires * 1000).toString() !== 'Invalid Date' &&
-    typeof b?.user?.name === 'string' &&
-    typeof b?.user?.email === 'string' &&
-    (typeof b?.user?.avatarUrl === 'string' ||
-      [null, undefined].includes(b?.user?.avatarUrl))
+    typeof b.success === 'boolean' &&
+    b.success === true &&
+    typeof b.token === 'string' &&
+    typeof b.expires === 'number' &&
+    new Date(b.expires * 1000).toString() !== 'Invalid Date' &&
+    (typeof b.user.id === 'string' || typeof b.user.id === 'number') &&
+    typeof b.user.name === 'string' &&
+    typeof b.user.email === 'string' &&
+    (typeof b.user.avatarUrl === 'string' ||
+      [null, undefined].includes(b.user.avatarUrl))
   );
 };
 
@@ -53,7 +53,7 @@ export const login = async (argData: ArgData): Promise<RtnData> => {
     if (!isOkResBody(body)) {
       throw new ApiError(
         'システムエラー：サーバー・クライアント間矛盾',
-        'refresh:ResBodyUnexpected',
+        'login:ResBodyUnexpected',
       );
     }
     const loginUser = (() => {
