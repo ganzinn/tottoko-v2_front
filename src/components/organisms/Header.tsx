@@ -1,4 +1,3 @@
-/* eslint-disable no-template-curly-in-string */
 import { VFC } from 'react';
 import { MdLogout } from 'react-icons/md';
 import { ImProfile } from 'react-icons/im';
@@ -17,18 +16,11 @@ import {
   Avatar,
   MenuGroup,
   MenuDivider,
-  // Modal,
-  // ModalOverlay,
-  // ModalContent,
-  // ModalHeader,
-  // ModalFooter,
 } from '@chakra-ui/react';
 import { HamburgerIcon } from '@chakra-ui/icons';
 
 import logo from 'image/logo.png';
 import { LoginUser } from 'feature/models/user';
-// import { BaseButton } from 'components/atoms/BaseButton';
-// import { ApiMessagesArea } from 'components/atoms/ApiMessagesArea';
 import { CmnModal } from 'components/molecules/CmnModal';
 
 type Props = {
@@ -36,6 +28,7 @@ type Props = {
   logoOnClick?: () => void;
   signUpOnClick?: () => void;
   loginOnClick?: () => void;
+  worksOnClick?: () => void;
   workEntryOnClick?: () => void;
   familySettingOnClick?: () => void;
   profileOnClick?: () => void;
@@ -53,6 +46,7 @@ export const Header: VFC<Props> = ({
   signUpOnClick,
   loginOnClick,
   workEntryOnClick,
+  worksOnClick,
   familySettingOnClick,
   profileOnClick,
   apiMessages,
@@ -104,6 +98,13 @@ export const Header: VFC<Props> = ({
         {loginUser ? (
           <>
             <Button
+              onClick={worksOnClick}
+              fontWeight="semibold"
+              bgColor="white"
+            >
+              作品一覧
+            </Button>
+            <Button
               onClick={workEntryOnClick}
               fontWeight="semibold"
               bgColor="white"
@@ -125,7 +126,7 @@ export const Header: VFC<Props> = ({
               fontWeight="semibold"
               bgColor="white"
             >
-              新規登録
+              会員登録
             </Button>
             <Button
               onClick={loginOnClick}
@@ -188,6 +189,13 @@ export const Header: VFC<Props> = ({
           {loginUser ? (
             <>
               <MenuItem
+                onClick={worksOnClick}
+                bgColor="white"
+                fontWeight="bold"
+              >
+                作品一覧
+              </MenuItem>
+              <MenuItem
                 onClick={workEntryOnClick}
                 bgColor="white"
                 fontWeight="bold"
@@ -224,7 +232,7 @@ export const Header: VFC<Props> = ({
           ) : (
             <>
               <MenuItem onClick={signUpOnClick} bgColor="white">
-                新規登録
+                会員登録
               </MenuItem>
               <MenuItem onClick={loginOnClick} bgColor="white">
                 ログイン
