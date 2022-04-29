@@ -49,6 +49,7 @@ export const EnhancedHeader: VFC = () => {
     logoOnClick: () => navigate('/'),
     signUpOnClick: () => navigate('/users/sign_up'),
     loginOnClick: () => navigate('/users/sessions/login'),
+    worksOnClick: () => navigate('/users/me/works'),
     workEntryOnClick: () => navigate('/users/me/works/entry'),
     familySettingOnClick: () => navigate('/users/me/creators'),
     profileOnClick: () => navigate('/users/me'),
