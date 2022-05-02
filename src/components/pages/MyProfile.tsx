@@ -64,7 +64,7 @@ export const MyProfile: VFC<Props> = ({
   },
 }) => (
   <Center>
-    <Card width="xl" px={6} py={8}>
+    <Card width="xl">
       <Stack spacing={6}>
         <Heading as="h3" fontSize={26} textAlign="center">
           ユーザー情報

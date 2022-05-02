@@ -64,7 +64,7 @@ export const EnhancedWork: VFC = () => {
 
   return (
     <Center>
-      <Card w="3xl" maxW="100vw">
+      <Card w="3xl" maxW="100vw" px={2} py={2}>
         <Stack spacing={2}>
           <ApiMessagesArea apiMessages={apiMessages} />
           <ImageGallery imageUrls={data?.work.detailImageUrls} />

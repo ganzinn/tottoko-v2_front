@@ -6,7 +6,14 @@ type Props = {
 } & BoxProps;
 
 export const Card: VFC<Props> = ({ children, ...rest }) => (
-  <Box bg="white" shadow="base" rounded="lg" px={2} py={2} {...rest}>
+  <Box
+    bg="white"
+    shadow="base"
+    rounded="lg"
+    px={{ base: 4, md: 10 }}
+    py={8}
+    {...rest}
+  >
     {children}
   </Box>
 );

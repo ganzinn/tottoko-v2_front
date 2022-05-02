@@ -32,7 +32,7 @@ export const SignUp: VFC<Props> = ({
   isRegistered,
 }) => (
   <Center>
-    <Card width="xl" px={10} py={8}>
+    <Card width="xl">
       {!isRegistered ? (
         <Stack spacing={6}>
           <Heading as="h3" fontSize={26} textAlign="center">

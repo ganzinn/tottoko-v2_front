@@ -31,7 +31,7 @@ export const MyprofileEdit: VFC<Props> = ({
   submitBtnProps = {},
 }) => (
   <Center>
-    <Card width="xl" px={10} py={8}>
+    <Card width="xl">
       <Stack spacing={6}>
         <Heading as="h3" fontSize={26} textAlign="center">
           おなまえ／画像の変更
