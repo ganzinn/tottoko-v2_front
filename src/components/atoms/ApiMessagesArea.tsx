@@ -12,7 +12,9 @@ export const ApiMessagesArea: VFC<Props> = memo(({ apiMessages }) => (
         <AlertIcon />
         <Stack>
           {apiMessages.map((apiMessage) => (
-            <Text key={apiMessage}>{apiMessage}</Text>
+            <Text key={apiMessage} whiteSpace="pre-wrap">
+              {apiMessage}
+            </Text>
           ))}
         </Stack>
       </Alert>
