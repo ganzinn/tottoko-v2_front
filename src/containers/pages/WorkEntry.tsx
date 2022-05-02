@@ -1,4 +1,4 @@
-import { useState, VFC } from 'react';
+import { useEffect, useState, VFC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
@@ -29,10 +29,22 @@ export const EnhancedWorkEntry: VFC = () => {
     data: creatorsData,
     error: creatorsError,
     isFetching: creatorsIsFetching,
-  } = useQuery<{ creators?: Creator[] }, ApiError>(
+  } = useQuery<{ creators: Creator[] }, ApiError>(
     ['creators', 'work_entry'],
     () => getCreators({ querys: ['purp=work_entry'] }),
   );
+
+  const [creatorEmptyMessage, setCreatorEmptyMessage] = useState<
+    string[] | undefined
+  >();
+  useEffect(() => {
+    if (creatorsData === undefined) return;
+    if (creatorsData.creators.length === 0) {
+      setCreatorEmptyMessage([
+        `お子さまが登録されていません。\n[家族設定]よりお子さまを登録してください。`,
+      ]);
+    }
+  }, [creatorsData]);
 
   const {
     data: scopeData,
@@ -45,6 +57,7 @@ export const EnhancedWorkEntry: VFC = () => {
   );
 
   const [images, setImages] = useState<File[]>([]);
+  const [isImageLoading, setIsImageLoading] = useState(false);
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -88,6 +101,8 @@ export const EnhancedWorkEntry: VFC = () => {
   const imagesUploadProps = {
     images,
     setImages,
+    isLoading: isImageLoading,
+    setIsLoading: setIsImageLoading,
   };
 
   const creatorProps = {
@@ -154,7 +169,7 @@ export const EnhancedWorkEntry: VFC = () => {
   };
 
   const submitBtnProps = {
-    disabled: !isValid || !images.length,
+    disabled: !isValid || !images.length || isImageLoading,
     isLoading: isSubmitting,
   };
 
@@ -162,7 +177,7 @@ export const EnhancedWorkEntry: VFC = () => {
     <WorkEntry
       onSubmit={handleSubmit(onSubmit)}
       {...{
-        apiMessages: apiError?.displayMessages,
+        apiMessages: apiError?.displayMessages || creatorEmptyMessage,
         imagesUploadProps,
         creatorProps,
         createdDateProps,

@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
+import imageCompression from 'browser-image-compression';
 import {
   Box,
-  // Button,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -13,13 +13,16 @@ import {
   Text,
   useMergeRefs,
 } from '@chakra-ui/react';
+import { CloseIcon } from '@chakra-ui/icons';
+
 import { BaseInput } from 'components/atoms/BaseInput';
 import { BaseButton } from 'components/atoms/BaseButton';
-import { CloseIcon } from '@chakra-ui/icons';
 
 export type ImagesUploadProps = {
   images?: File[];
   setImages?: React.Dispatch<React.SetStateAction<File[]>>;
+  isLoading?: boolean;
+  setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>;
   name?: string;
   labelName?: string;
   optionalLabel?: boolean;
@@ -30,6 +33,8 @@ export const ImagesUpload = forwardRef<ImagesUploadProps, 'input'>(
     {
       images = [],
       setImages = () => undefined,
+      isLoading = false,
+      setIsLoading = () => undefined,
       name = 'images',
       labelName = '画像',
       optionalLabel = false,
@@ -67,14 +72,14 @@ export const ImagesUpload = forwardRef<ImagesUploadProps, 'input'>(
           return false;
         }
 
-        if (file.size / (1024 * 1024) > 3) {
-          setErrorMessages((state) => [
-            ...state,
-            '3Mbより大きい画像は指定できません',
-          ]);
+        // if (file.size / (1024 * 1024) > 3) {
+        //   setErrorMessages((state) => [
+        //     ...state,
+        //     '3Mbより大きい画像は指定できません',
+        //   ]);
 
-          return false;
-        }
+        //   return false;
+        // }
 
         return true;
       });
@@ -89,7 +94,32 @@ export const ImagesUpload = forwardRef<ImagesUploadProps, 'input'>(
       if (newImages.length >= 6) {
         setErrorMessages((state) => [...state, '画像の投稿は５枚までです']);
       }
-      setImages(newImages.slice(0, 5));
+      const limitImages = newImages.slice(0, 5);
+
+      // 画像圧縮
+      const compressOptions = {
+        maxSizeMB: 3,
+      };
+      const load = async () => {
+        setIsLoading(true);
+        const registImages = await Promise.all(
+          limitImages.map(async (image) => {
+            let registImage = image;
+            if (image.size / (1024 * 1024) > 3) {
+              const compressImage = await imageCompression(
+                image,
+                compressOptions,
+              );
+              registImage = new File([compressImage], image.name);
+            }
+
+            return registImage;
+          }),
+        );
+        setImages(registImages);
+        setIsLoading(false);
+      };
+      void load();
     };
 
     const handleCancel = (imageIndex: number) => {
@@ -125,9 +155,12 @@ export const ImagesUpload = forwardRef<ImagesUploadProps, 'input'>(
             <BaseButton
               variant="outline"
               onClick={() => inputRef.current?.click()}
+              isLoading={isLoading}
+              disabled={isLoading}
             >
               画像を選択
             </BaseButton>
+            <Text fontSize="sm">3MBより大きい画像は圧縮されます</Text>
             <FormErrorMessage as="ul" listStyleType="none" display="block">
               {!!errorMessages.length &&
                 errorMessages.map((errorMessage, index) => (

@@ -58,6 +58,7 @@ export const EnhancedWorkEdit: VFC = () => {
   );
 
   const [images, setImages] = useState<File[]>([]);
+  const [isImageLoading, setIsImageLoading] = useState(false);
 
   const {
     register,
@@ -82,6 +83,7 @@ export const EnhancedWorkEdit: VFC = () => {
     if (!getWorkData) return;
     const load = async () => {
       if (!getWorkData) return;
+      setIsImageLoading(true);
       const imagePromises = getWorkData.work.detailImageUrls.map(
         async (imageSrc) => {
           const response = await ky(imageSrc);
@@ -95,6 +97,7 @@ export const EnhancedWorkEdit: VFC = () => {
       );
       const downloadImages = await Promise.all(imagePromises);
       setImages(downloadImages);
+      setIsImageLoading(false);
     };
     void load();
   }, [getWorkData]);
@@ -136,6 +139,8 @@ export const EnhancedWorkEdit: VFC = () => {
   const imagesUploadProps = {
     images,
     setImages,
+    isLoading: isImageLoading,
+    setIsLoading: setIsImageLoading,
   };
 
   const creatorProps = {
@@ -213,7 +218,7 @@ export const EnhancedWorkEdit: VFC = () => {
   };
 
   const submitBtnProps = {
-    disabled: !isValid || !images.length,
+    disabled: !isValid || !images.length || isImageLoading,
     isLoading: isLoadingGetWork || isSubmitting,
   };
 
