@@ -1,9 +1,11 @@
-import { useState, VFC } from 'react';
+import { useEffect, useState, VFC } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 
 import { SignUp } from 'components/pages/SignUp';
 import { ApiError } from 'feature/api';
 import { create } from 'feature/api/users/create';
+import { useAppSelector } from 'store';
 
 type FormData = {
   email: string;
@@ -15,11 +17,20 @@ type FormData = {
 export const EnhancedSignUp: VFC = () => {
   const [isRegistered, setIsRegistered] = useState(false);
   const [apiMessages, setApiMessages] = useState<string[]>();
+  const userAuth = useAppSelector((state) => state.userAuth);
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors, isValid, isSubmitting },
   } = useForm<FormData>({ criteriaMode: 'all', mode: 'all' });
+
+  useEffect(() => {
+    if (userAuth) {
+      navigate('/', { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userAuth]);
 
   const onSubmit: SubmitHandler<FormData> = async (formData) => {
     try {
