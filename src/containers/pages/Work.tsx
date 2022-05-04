@@ -91,10 +91,13 @@ export const EnhancedWork: VFC = () => {
           {!!data && (
             <Stack spacing={2} px={{ base: 2, md: 8 }}>
               <Stack spacing={1}>
-                <Text fontSize={20} fontWeight="bold">
-                  {data.work.creator.name}
-                </Text>
-                <Text fontWeight="bold">{`${createdDate} / ${ageAtThatTime}`}</Text>
+                <Text fontWeight="bold">{createdDate}</Text>
+                <Flex alignItems="baseline">
+                  <Text fontSize={20} fontWeight="bold" color="blue.600">
+                    {data.work.creator.name}
+                  </Text>
+                  <Text fontWeight="bold">{`( ${ageAtThatTime} )`}</Text>
+                </Flex>
               </Stack>
               <Text
                 textAlign="center"
