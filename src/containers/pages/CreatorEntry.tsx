@@ -1,7 +1,7 @@
 import { VFC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 
 import { CreatorEntry } from 'components/pages/CreatorEntry';
 import { create as createCreator } from 'feature/api/creator/create';
@@ -22,6 +22,7 @@ export type ApiInputData = Omit<FormInputData, 'images'> & { avatar?: File };
 
 export const EnhancedCreatorEntry: VFC = () => {
   const [apiError, setApiError] = useState<ApiError | null>(null);
+  const queryClient = useQueryClient();
 
   const {
     data: relationData,
@@ -67,6 +68,9 @@ export const EnhancedCreatorEntry: VFC = () => {
           title: `${formInputData.name}さんの情報を登録しました`,
           status: 'success',
           isClosable: true,
+        });
+        void queryClient.resetQueries(['creators', 'work_entry'], {
+          exact: true,
         });
         navigate('/users/me/creators');
       }
