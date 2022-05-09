@@ -43,6 +43,8 @@ export const EnhancedWorkEntry: VFC = () => {
       setCreatorEmptyMessage([
         `お子さまが登録されていません。\n[家族設定]よりお子さまを登録してください。`,
       ]);
+    } else {
+      setCreatorEmptyMessage(undefined);
     }
   }, [creatorsData]);
 
