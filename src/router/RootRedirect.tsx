@@ -8,8 +8,8 @@ export const RootRedirect: VFC = () => {
   const location = useLocation();
 
   if (!isUserAuth) {
-    return <Navigate to="/about" state={{ from: location }} />;
+    return <Navigate to="/about" state={{ from: location }} replace />;
   }
 
-  return <Navigate to="/users/me/works" />;
+  return <Navigate to="/users/me/works" replace />;
 };
